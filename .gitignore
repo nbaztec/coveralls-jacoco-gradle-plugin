@@ -1,0 +1,19 @@
+# gradle build dir
+build/*
+
+# gradle local dir
+.gradle
+
+# eclipse files
+.settings
+.classpath
+.project
+bin
+
+# idea files
+*.iml
+*.ipr
+*.iws
+.idea
+out
+
