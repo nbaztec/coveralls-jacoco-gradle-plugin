@@ -1,3 +1,6 @@
+group = "com.github.nbaztec"
+version = "1.0.1"
+
 repositories {
     mavenCentral()
     jcenter()
@@ -21,18 +24,13 @@ plugins {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.github.nbaztec"
             artifactId = "coveralls-jacoco-kotlin"
-            version = "1.0.0"
 
             from(components["java"])
         }
 
     }
 }
-
-group = "com.github.nbaztec"
-version = "1.0.0"
 
 gradlePlugin {
     plugins {
