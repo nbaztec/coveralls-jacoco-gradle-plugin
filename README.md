@@ -12,8 +12,6 @@ This will add a gradle task `coverallsJacoco` that can be used to publish covera
 ## Options
 ```kotlin
 coverallsJacoco {
-    dependsOn test
-    
     rootPackage = 'com.github.nbaztec.foo' // optional, leave out if project has java directory structure  
     reportPath = 'build/reports/jacoco/test/jacocoTestReport.xml'
 }
