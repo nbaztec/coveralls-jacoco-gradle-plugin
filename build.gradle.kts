@@ -12,13 +12,36 @@ dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.8.1.202007141445-r")
     implementation("org.apache.httpcomponents:httpmime:4.5.2")
     implementation("com.google.code.gson:gson:2.8.5")
+    testImplementation("junit:junit:4.13")
+    testImplementation( "org.junit.jupiter:junit-jupiter-api:5.6.2")
+    testImplementation("io.mockk:mockk:1.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.isEnabled = true
+            html.isEnabled = true
+        }
+    }
 }
 
 plugins {
+    jacoco
     `java-gradle-plugin`
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
     id("com.gradle.plugin-publish") version "0.12.0"
+    id("com.github.nbaztec.coveralls-jacoco-kotlin") version "1.0.3"
+}
+
+coverallsJacoco {
+    rootPackage = "org.gradle.plugin.coveralls.jacoco"
 }
 
 publishing {
@@ -40,6 +63,7 @@ gradlePlugin {
         }
     }
 }
+
 pluginBundle {
     (plugins) {
         "coverallsJacocoKotlinPlugin" {
