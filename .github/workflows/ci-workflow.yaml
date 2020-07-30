@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Test
+    - name: test-and-coverage
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: ./gradlew jacocoTestReport coveralls
+      run: ./gradlew jacocoTestReport coverallsJacoco --debug

@@ -1,4 +1,6 @@
 # Coveralls Jacoco Kotlin Gradle Plugin
+[![Coverage Status](https://coveralls.io/repos/github/nbaztec/coveralls-jacoco-kotlin-gradle-plugin/badge.svg?branch=master)](https://coveralls.io/github/nbaztec/coveralls-jacoco-kotlin-gradle-plugin?branch=master)
+
 A jacoco test coverage reporter gradle plugin for Kotlin and [coveralls.io](https://coveralls.io).
 
 The plugin supports non-root packages in line with the recommended [Kotlin directory structure](https://kotlinlang.org/docs/reference/coding-conventions.html#directory-structure) 
