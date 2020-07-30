@@ -2,56 +2,52 @@ package org.gradle.plugin.coveralls.jacoco
 
 data class ServiceInfo(val name: String, val jobId: String? = null, val pr: String? = null, val branch: String? = null)
 
-class ServiceInfoParser {
-    companion object {
-        private val isJenkins = System.getenv("JENKINS_URL") != null
-        private val isTravis = System.getenv("TRAVIS") == "true"
-        private val isCircleCI = System.getenv("CIRCLECI") == "true"
-        private val isCodeship = System.getenv("CI_NAME") == "codeship"
-        private val isGithubActions = System.getenv("GITHUB_ACTIONS") != null
+class ServiceInfoParser(val envGetter: EnvGetter) {
+    private val isJenkins = envGetter("JENKINS_URL") != null
+    private val isTravis = envGetter("TRAVIS") == "true"
+    private val isCircleCI = envGetter("CIRCLECI") == "true"
+    private val isCodeship = envGetter("CI_NAME") == "codeship"
+    private val isGithubActions = envGetter("GITHUB_ACTIONS") != null
 
-        private fun envOrNull(v: String): String? = System.getenv(v)?.ifBlank { null }
-
-        fun parse(): ServiceInfo {
-            return when {
-                isJenkins -> ServiceInfo(
-                        "jenkins",
-                        envOrNull("BUILD_NUMBER"),
-                        envOrNull("ghprbPullId"),
-                        envOrNull("GIT_BRANCH")
+    fun parse(): ServiceInfo {
+        return when {
+            isJenkins -> ServiceInfo(
+                    "jenkins",
+                    envGetter("BUILD_NUMBER"),
+                    envGetter("ghprbPullId"),
+                    envGetter("GIT_BRANCH")
+            )
+            isTravis -> ServiceInfo(
+                    envGetter("CI_NAME") ?: "travis-pro",
+                    envGetter("TRAVIS_JOB_ID"),
+                    envGetter("TRAVIS_PULL_REQUEST"),
+                    envGetter("TRAVIS_BRANCH")
+            )
+            isCircleCI -> {
+                ServiceInfo(
+                        "circleci",
+                        envGetter("CIRCLE_BUILD_NUM"),
+                        envGetter("CIRCLE_PULL_REQUEST")?.substringAfterLast("/"),
+                        envGetter("CIRCLE_BRANCH")
                 )
-                isTravis -> ServiceInfo(
-                        envOrNull("CI_NAME") ?: "travis-pro",
-                        envOrNull("TRAVIS_JOB_ID"),
-                        envOrNull("TRAVIS_PULL_REQUEST"),
-                        envOrNull("TRAVIS_BRANCH")
-                )
-                isCircleCI -> {
-                    ServiceInfo(
-                            "circleci",
-                            envOrNull("CIRCLE_BUILD_NUM"),
-                            envOrNull("CIRCLE_PULL_REQUEST")?.substringAfterLast("/"),
-                            envOrNull("CIRCLE_BRANCH")
-                    )
-                }
-                isCodeship -> ServiceInfo(
-                        "codeship",
-                        envOrNull("CI_BUILD_NUMBER"),
-                        envOrNull("CI_PR_NUMBER"),
-                        envOrNull("CI_BRANCH")
-                )
-                isGithubActions -> ServiceInfo(
-                        "github-actions",
-                        envOrNull("BUILD_NUMBER"),
-                        envOrNull("GITHUB_REF")?.let { ref ->
-                            "refs/pull/(\\d+)/merge".toRegex().find(ref)?.let {
-                                it.groupValues[1]
-                            }
-                        },
-                        envOrNull("CI_BRANCH")
-                )
-                else -> ServiceInfo("other")
             }
+            isCodeship -> ServiceInfo(
+                    "codeship",
+                    envGetter("CI_BUILD_NUMBER"),
+                    envGetter("CI_PR_NUMBER"),
+                    envGetter("CI_BRANCH")
+            )
+            isGithubActions -> ServiceInfo(
+                    "github-actions",
+                    envGetter("BUILD_NUMBER"),
+                    envGetter("GITHUB_REF")?.let { ref ->
+                        "refs/pull/(\\d+)/merge".toRegex().find(ref)?.let {
+                            it.groupValues[1]
+                        }
+                    },
+                    envGetter("CI_BRANCH")
+            )
+            else -> ServiceInfo("other")
         }
     }
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN"
+        "report.dtd">
+<report name="coveralls-jacoco-kotlin-gradle-plugin">
+    <sessioninfo id="HAMACL00142-96fbcb3b" start="1596118223365" dump="1596118225180"/>
+    <package name="foo/bar/baz">
+        <sourcefile name="Main.kt">
+            <line nr="5" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="6" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="7" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="8" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="10" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="11" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="12" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="13" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="14" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="15" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="17" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="18" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="19" mi="3" ci="1" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="55" covered="236"/>
+            <counter type="LINE" missed="15" covered="23"/>
+            <counter type="COMPLEXITY" missed="13" covered="5"/>
+            <counter type="METHOD" missed="13" covered="5"/>
+            <counter type="CLASS" missed="1" covered="5"/>
+        </sourcefile>
+        <counter type="INSTRUCTION" missed="1035" covered="506"/>
+        <counter type="BRANCH" missed="34" covered="20"/>
+        <counter type="LINE" missed="127" covered="60"/>
+        <counter type="COMPLEXITY" missed="74" covered="17"/>
+        <counter type="METHOD" missed="56" covered="8"/>
+        <counter type="CLASS" missed="14" covered="7"/>
+    </package>
+    <package name="foo/bar/baz/internal">
+        <sourcefile name="Util.kt">
+            <line nr="5" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="6" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="7" mi="3" ci="1" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="524" covered="0"/>
+            <counter type="BRANCH" missed="20" covered="0"/>
+            <counter type="LINE" missed="49" covered="0"/>
+            <counter type="COMPLEXITY" missed="20" covered="0"/>
+            <counter type="METHOD" missed="10" covered="0"/>
+            <counter type="CLASS" missed="4" covered="0"/>
+        </sourcefile>
+    </package>
+    <package name="foo/bar/baz/lib">
+        <sourcefile name="Lib.kt">
+            <line nr="5" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="6" mi="3" ci="1" mb="0" cb="0"/>
+            <line nr="7" mi="3" ci="1" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="524" covered="0"/>
+            <counter type="BRANCH" missed="20" covered="0"/>
+            <counter type="LINE" missed="49" covered="0"/>
+            <counter type="COMPLEXITY" missed="20" covered="0"/>
+            <counter type="METHOD" missed="10" covered="0"/>
+            <counter type="CLASS" missed="4" covered="0"/>
+        </sourcefile>
+    </package>
+    <counter type="INSTRUCTION" missed="1035" covered="506"/>
+    <counter type="BRANCH" missed="34" covered="20"/>
+    <counter type="LINE" missed="127" covered="60"/>
+    <counter type="COMPLEXITY" missed="74" covered="17"/>
+    <counter type="METHOD" missed="56" covered="8"/>
+    <counter type="CLASS" missed="14" covered="7"/>
+</report>

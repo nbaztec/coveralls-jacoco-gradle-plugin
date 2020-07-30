@@ -17,7 +17,8 @@ class CoverallsJacocoPlugin : Plugin<Project> {
 
         project.task("coverallsJacoco") {
             it.doLast {
-                CoverallsReporter.report(project)
+                val envGetter = {v: String -> System.getenv(v)?.ifBlank { null } }
+                CoverallsReporter(envGetter).report(project)
             }
         }
     }
