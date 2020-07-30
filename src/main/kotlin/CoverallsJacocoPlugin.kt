@@ -2,11 +2,13 @@ package org.gradle.plugin.coveralls.jacoco
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSet
 
 open class CoverallsJacocoPluginExtension {
     var rootPackage: String? = null
     var reportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
     var apiEndpoint = "https://coveralls.io/api/v1/jobs"
+    var additionalSourceSets = emptyList<SourceSet>()
 }
 
 class CoverallsJacocoPlugin : Plugin<Project> {

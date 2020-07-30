@@ -62,16 +62,15 @@ class SourceReportParser {
             val pluginExtension = project.extensions.getByName("coverallsJacoco") as CoverallsJacocoPluginExtension
             val kotlinExtension = project.extensions.getByName("kotlin") as KotlinProjectExtension
 
-            val sourceDirs = kotlinExtension.sourceSets.getByName("main").kotlin.srcDirs.filterNotNull()
+            val sourceSets = listOf(kotlinExtension.sourceSets.getByName("main").kotlin) +
+                    pluginExtension.additionalSourceSets.map { it.allJava }
+            val sourceDirs = sourceSets.flatMap { it.srcDirs }.filterNotNull()
 
+            logger.debug("using source directories: $sourceDirs")
             return read(pluginExtension.reportPath, pluginExtension.rootPackage)
                     .mapNotNull { (filename, cov) ->
                         sourceDirs.find {
-                            File(it, filename).let { f ->
-                                f.exists().also { exists ->
-                                    if (!exists) logger.debug("${f.absolutePath} does not exist, skipping")
-                                }
-                            }
+                            File(it, filename).exists()
                         }?.let { dir ->
                             val f = File(dir, filename)
                             val lines = f.readLines()
@@ -81,6 +80,8 @@ class SourceReportParser {
 
                             val relPath = File(project.projectDir.absolutePath).toURI().relativize(f.toURI()).toString()
                             SourceReport(relPath, f.md5(), lineHits.toList())
+                        }.also {
+                            it ?: logger.info("$filename could not be found in any of the source directories, skipping")
                         }
                     }
         }
