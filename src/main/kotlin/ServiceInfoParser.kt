@@ -10,7 +10,7 @@ class ServiceInfoParser {
         private val isCodeship = System.getenv("CI_NAME") == "codeship"
         private val isGithubActions = System.getenv("GITHUB_ACTIONS") != null
 
-        private fun envOrNull(v: String): String? = System.getenv(v).takeIf(String::isNotBlank)
+        private fun envOrNull(v: String): String? = System.getenv(v)?.ifBlank { null }
 
         fun parse(): ServiceInfo {
             return when {
