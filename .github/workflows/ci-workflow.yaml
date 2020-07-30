@@ -10,8 +10,8 @@ jobs:
   build: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Test
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: ./gradlew jacocoTestReport coveralls
+    - uses: actions/checkout@v2
+    - name: Test
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: ./gradlew jacocoTestReport coveralls
