@@ -74,7 +74,8 @@ class SourceReportParser {
                             File(it, filename).exists()
                         }?.let { dir ->
                             val f = File(dir, filename)
-                            println(f)
+                            logger.debug("found file: $f")
+
                             val lines = f.readLines()
                             val lineHits = arrayOfNulls<Int>(lines.size)
 
