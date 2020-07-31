@@ -4,7 +4,7 @@ import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.dom4j.io.SAXReader
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.gradle.api.tasks.SourceSetContainer
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -59,20 +59,22 @@ class SourceReportParser {
         }
 
         fun parse(project: Project): List<SourceReport> {
-            val pluginExtension = project.extensions.getByName("coverallsJacoco") as CoverallsJacocoPluginExtension
-            val kotlinExtension = project.extensions.getByName("kotlin") as KotlinProjectExtension
+            val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
-            val sourceSets = listOf(kotlinExtension.sourceSets.getByName("main").kotlin) +
-                    pluginExtension.additionalSourceSets.map { it.allJava }
-            val sourceDirs = sourceSets.flatMap { it.srcDirs }.filterNotNull()
+            val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
+                project.extensions.getByType(SourceSetContainer::class.java).getByName("main").allJava.srcDirs.filterNotNull()
+            } else {
+                pluginExtension.reportSourceSets.flatMap { it.allJava.srcDirs }.filterNotNull()
+            }
 
-            logger.debug("using source directories: $sourceDirs")
+            logger.info("using source directories: $sourceDirs")
             return read(pluginExtension.reportPath, pluginExtension.rootPackage)
                     .mapNotNull { (filename, cov) ->
                         sourceDirs.find {
                             File(it, filename).exists()
                         }?.let { dir ->
                             val f = File(dir, filename)
+                            println(f)
                             val lines = f.readLines()
                             val lineHits = arrayOfNulls<Int>(lines.size)
 
