@@ -54,7 +54,7 @@ class CoverallsReporter(val envGetter: EnvGetter) {
                 gitInfo,
                 sourceFiles
         )
-        val pluginExtension = project.extensions.getByName("coverallsJacoco") as CoverallsJacocoPluginExtension
+        val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
         send(pluginExtension.apiEndpoint, req)
     }
