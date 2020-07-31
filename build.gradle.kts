@@ -1,5 +1,5 @@
 group = "com.github.nbaztec"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenCentral()
@@ -47,7 +47,7 @@ coverallsJacoco {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "coveralls-jacoco-kotlin"
+            artifactId = "coveralls-jacoco"
 
             from(components["java"])
         }
@@ -57,8 +57,8 @@ publishing {
 
 gradlePlugin {
     plugins {
-        create("coverallsJacocoKotlinPlugin") {
-            id = "com.github.nbaztec.coveralls-jacoco-kotlin"
+        create("coverallsJacocoPlugin") {
+            id = "com.github.nbaztec.coveralls-jacoco"
             implementationClass = "org.gradle.plugin.coveralls.jacoco.CoverallsJacocoPlugin"
         }
     }
@@ -66,12 +66,12 @@ gradlePlugin {
 
 pluginBundle {
     (plugins) {
-        "coverallsJacocoKotlinPlugin" {
-            website = "http://github.com/nbaztec/coveralls-jacoco-kotlin-gradle-plugin/"
-            vcsUrl = "https://github.com/nbaztec/coveralls-jacoco-kotlin-gradle-plugin.git"
+        "coverallsJacocoPlugin" {
+            website = "http://github.com/nbaztec/coveralls-jacoco-gradle-plugin/"
+            vcsUrl = "https://github.com/nbaztec/coveralls-jacoco-gradle-plugin.git"
             description = "Send jacoco coverage data to coveralls.io"
             tags = listOf("coverage", "coveralls")
-            displayName = "Coveralls Jacoco Kotlin Plugin"
+            displayName = "Coveralls Jacoco Plugin"
         }
     }
 }
