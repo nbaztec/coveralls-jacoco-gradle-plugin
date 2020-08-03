@@ -20,7 +20,7 @@ dependencies {
     implementation("org.apache.httpcomponents", "httpmime", "4.5.12")
     implementation("com.google.code.gson", "gson", "2.8.5")
     testImplementation("junit", "junit", "4.13")
-    testImplementation( "org.junit.jupiter", "junit-jupiter-api", "5.6.2")
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.6.2")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.6.2")
     testImplementation("io.mockk", "mockk", "1.10.0")
 }
@@ -34,6 +34,19 @@ tasks {
         reports {
             xml.isEnabled = true
             html.isEnabled = true
+        }
+    }
+
+    create("setupPublishSecrets") {
+        doLast {
+            val key = System.getenv("GRADLE_PUBLISH_KEY")
+            val secret = System.getenv("GRADLE_PUBLISH_SECRET")
+
+            check(key != null) { "GRADLE_PUBLISH_KEY is required" }
+            check(secret != null) { "GRADLE_PUBLISH_SECRET is required" }
+
+            System.setProperty("gradle.publish.key", key)
+            System.setProperty("gradle.publish.secret", secret)
         }
     }
 }
