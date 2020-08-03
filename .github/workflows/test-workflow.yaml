@@ -1,4 +1,4 @@
-name: CI
+name: Tests
 
 on:
   push:
@@ -15,4 +15,4 @@ jobs:
     - name: test-and-coverage
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: ./gradlew jacocoTestReport coverallsJacoco --debug
+      run: ./gradlew jacocoTestReport coverallsJacoco
