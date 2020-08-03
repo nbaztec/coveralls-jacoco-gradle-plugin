@@ -154,6 +154,15 @@ internal class ServiceInfoParserTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `ServiceInfoParser parses unidentifiable ci as other`() {
+        val envGetter = createEnvGetter(emptyMap())
+
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo("other")
+        assertEquals(expected, actual)
+    }
+
     private fun createEnvGetter(entries: Map<String, String>): EnvGetter {
         return { k: String -> entries[k] }
     }
