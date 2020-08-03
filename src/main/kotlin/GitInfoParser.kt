@@ -26,39 +26,37 @@ data class GitInfo(
         val remotes: Collection<Remote>
 )
 
-class GitInfoParser {
-    companion object {
-        private val logger: Logger by lazy { LogManager.getLogger(GitInfoParser::class.java) }
+object GitInfoParser {
+    private val logger: Logger by lazy { LogManager.getLogger(GitInfoParser::class.java) }
 
-        fun parse(directory: File): GitInfo? {
-            try {
-                val repo = RepositoryBuilder().findGitDir(directory).build()
-                val head = repo.let {
-                    val rev = repo.resolve("HEAD")
-                    val commit = RevWalk(repo).parseCommit(rev)
+    fun parse(directory: File): GitInfo? {
+        try {
+            val repo = RepositoryBuilder().findGitDir(directory).build()
+            val head = repo.let {
+                val rev = repo.resolve("HEAD")
+                val commit = RevWalk(repo).parseCommit(rev)
 
-                    Head(
-                            rev.name,
-                            commit.authorIdent.name,
-                            commit.authorIdent.emailAddress,
-                            commit.committerIdent.name,
-                            commit.committerIdent.emailAddress,
-                            commit.fullMessage
-                    )
-                }
-
-                val remotes = repo.let {
-                    val config = repo.config
-                    config.getSubsections("remote").map {
-                        Remote(it, config.getString("remote", it, "url"))
-                    }
-                }
-
-                return GitInfo(head, repo.branch, remotes)
-            } catch (e: Exception) {
-                logger.info("unable to read git info: ${e.message}")
-                return null
+                Head(
+                        rev.name,
+                        commit.authorIdent.name,
+                        commit.authorIdent.emailAddress,
+                        commit.committerIdent.name,
+                        commit.committerIdent.emailAddress,
+                        commit.fullMessage
+                )
             }
+
+            val remotes = repo.let {
+                val config = repo.config
+                config.getSubsections("remote").map {
+                    Remote(it, config.getString("remote", it, "url"))
+                }
+            }
+
+            return GitInfo(head, repo.branch, remotes)
+        } catch (e: Exception) {
+            logger.info("unable to read git info: ${e.message}")
+            return null
         }
     }
 }

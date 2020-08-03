@@ -8,7 +8,7 @@ open class CoverallsJacocoPluginExtension {
     var rootPackage: String? = null
     var reportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
     var apiEndpoint = "https://coveralls.io/api/v1/jobs"
-    var additionalSourceSets = emptyList<SourceSet>()
+    var reportSourceSets: Iterable<SourceSet> = emptySet()
 }
 
 class CoverallsJacocoPlugin : Plugin<Project> {
@@ -17,7 +17,7 @@ class CoverallsJacocoPlugin : Plugin<Project> {
 
         project.task("coverallsJacoco") {
             it.doLast {
-                val envGetter = {v: String -> System.getenv(v)?.ifBlank { null } }
+                val envGetter = { v: String -> System.getenv(v)?.ifBlank { null } }
                 CoverallsReporter(envGetter).report(project)
             }
         }
