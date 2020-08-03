@@ -1,5 +1,6 @@
 package org.gradle.plugin.coveralls.jacoco
 
+import io.mockk.mockk
 import org.gradle.internal.impldep.com.google.common.io.Files
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -28,8 +29,8 @@ internal class DataClassTest {
 
     @Test
     fun `data class GitInfo`() {
-        val head = Head("1", "2", "3", "4", "5", "6")
-        val remote = Remote("1", "2")
+        val head = mockk<Head>()
+        val remote = mockk<Remote>()
 
         val gitInfo = GitInfo(head, "branch", listOf(remote))
         assertEquals(head, gitInfo.head)
@@ -53,5 +54,18 @@ internal class DataClassTest {
         assertEquals("1", srcReport.name)
         assertEquals("2", srcReport.source_digest)
         assertEquals(cov, srcReport.coverage)
+    }
+
+    @Test
+    fun `data class Request`() {
+        val gitInfo = mockk<GitInfo>()
+        val sourceFiles = emptyList<SourceReport>()
+        val req = Request("1", "2", "3", "4", gitInfo, sourceFiles)
+        assertEquals("1", req.repo_token)
+        assertEquals("2", req.service_name)
+        assertEquals("3", req.service_job_id)
+        assertEquals("4", req.service_pull_request)
+        assertEquals(gitInfo, req.git)
+        assertEquals(sourceFiles, req.source_files)
     }
 }

@@ -1,5 +1,11 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 group = "com.github.nbaztec"
 version = "1.0.4"
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+}
 
 repositories {
     mavenCentral()
@@ -7,15 +13,16 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.3.8")
     implementation("org.dom4j", "dom4j", "2.1.0")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61")
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.8.1.202007141445-r")
-    implementation("org.apache.httpcomponents:httpmime:4.5.2")
-    implementation("com.google.code.gson:gson:2.8.5")
-    testImplementation("junit:junit:4.13")
-    testImplementation( "org.junit.jupiter:junit-jupiter-api:5.6.2")
-    testImplementation("io.mockk:mockk:1.10.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.3.72")
+    implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.8.1.202007141445-r")
+    implementation("org.apache.httpcomponents", "httpmime", "4.5.12")
+    implementation("com.google.code.gson", "gson", "2.8.5")
+    testImplementation("junit", "junit", "4.13")
+    testImplementation( "org.junit.jupiter", "junit-jupiter-api", "5.6.2")
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.6.2")
+    testImplementation("io.mockk", "mockk", "1.10.0")
 }
 
 tasks {

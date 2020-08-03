@@ -2,6 +2,7 @@ package org.gradle.plugin.coveralls.jacoco
 
 
 import com.google.gson.Gson
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -27,6 +28,7 @@ typealias EnvGetter = (String) -> String?
 
 class CoverallsReporter(val envGetter: EnvGetter) {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
+    private val defaultHttpTimeoutMs = 10 * 1000
 
     fun report(project: Project) {
         logger.info("retrieving git info")
@@ -43,8 +45,8 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         logger.info("retrieving ci service info")
         val serviceInfo = ServiceInfoParser(envGetter).parse()
 
-        val repoToken = System.getenv("COVERALLS_REPO_TOKEN")
-        check(repoToken.isNotBlank()) { "COVERALLS_REPO_TOKEN not set" }
+        val repoToken = envGetter("COVERALLS_REPO_TOKEN")
+        check(repoToken != null && repoToken.isNotBlank()) { "COVERALLS_REPO_TOKEN not set" }
 
         val req = Request(
                 repoToken,
@@ -62,6 +64,13 @@ class CoverallsReporter(val envGetter: EnvGetter) {
     private fun send(endpoint: String, req: Request) {
         val httpClient = HttpClients.createDefault()
         val httpPost = HttpPost(endpoint).apply {
+            config = RequestConfig
+                    .custom()
+                    .setConnectTimeout(defaultHttpTimeoutMs)
+                    .setSocketTimeout(defaultHttpTimeoutMs)
+                    .setConnectionRequestTimeout(defaultHttpTimeoutMs)
+                    .build()
+
             entity = MultipartEntityBuilder
                     .create()
                     .addBinaryBody(
@@ -75,10 +84,9 @@ class CoverallsReporter(val envGetter: EnvGetter) {
 
         logger.info("sending payload to coveralls")
         logger.debug(req.json())
-
         val res = httpClient.execute(httpPost)
         if (res.statusLine.statusCode != 200) {
-            throw Exception("coveralls returned HTTP ${res.statusLine.statusCode}: ${EntityUtils.toString(res.entity)}")
+            throw Exception("coveralls returned HTTP ${res.statusLine.statusCode}: ${EntityUtils.toString(res.entity).trim()}")
         }
         logger.info("OK")
     }

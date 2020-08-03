@@ -67,6 +67,10 @@ class SourceReportParser {
                 pluginExtension.reportSourceSets.flatMap { it.allJava.srcDirs }.filterNotNull()
             }
 
+            if (sourceDirs.isEmpty()) {
+                return emptyList()
+            }
+
             logger.info("using source directories: $sourceDirs")
             return read(pluginExtension.reportPath, pluginExtension.rootPackage)
                     .mapNotNull { (filename, cov) ->
