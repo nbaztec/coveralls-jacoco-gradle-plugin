@@ -1,11 +1,8 @@
 package org.gradle.plugin.coveralls.jacoco
 
 import io.mockk.mockk
-import org.gradle.internal.impldep.com.google.common.io.Files
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import java.io.File
 
 // only required since kotlin data classes do not show up on coverage unless get/set operations are performed
 internal class DataClassTest {
