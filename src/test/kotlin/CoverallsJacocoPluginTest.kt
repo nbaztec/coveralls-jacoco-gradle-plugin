@@ -6,7 +6,6 @@ import io.mockk.verify
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.internal.tasks.DefaultSourceSetContainer
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.testfixtures.ProjectBuilder
@@ -30,8 +29,9 @@ internal class CoverallsJacocoPluginTest {
 
     @Test
     fun `CoverallsJacocoPlugin runs on task execute`() {
-        val sourceSetContainer = mockk<SourceSetContainer>()
-        every { sourceSetContainer.getByName("main").allJava.srcDirs } returns emptySet()
+        val sourceSetContainer = mockk<SourceSetContainer> {
+            every { getByName("main").allJava.srcDirs } returns emptySet()
+        }
         val project = ProjectBuilder.builder().withProjectDir(File(".")).build()
         project.extensions.add("sourceSets", sourceSetContainer)
 
