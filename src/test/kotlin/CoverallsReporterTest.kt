@@ -10,7 +10,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
-import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.internal.impldep.com.google.common.io.Files
 import org.junit.jupiter.api.AfterAll
@@ -141,21 +140,24 @@ Content-Transfer-Encoding: binary
     }
 
     private fun mockProject(optionsFunc: (SourceSetContainer, CoverallsJacocoPluginExtension) -> Unit = { _, _ -> Unit }): Project {
-        val sourceDirectorySet = mockk<SourceDirectorySet>()
-        every { sourceDirectorySet.srcDirs } returns setOf(testJavaStyleSourceDir)
-        val sourceSetContainer = mockk<SourceSetContainer>()
-        every { sourceSetContainer.getByName("main").allJava } returns sourceDirectorySet
+        val sourceSetContainer = mockk<SourceSetContainer> {
+            every { getByName("main").allJava } returns mockk {
+                every { srcDirs } returns setOf(testJavaStyleSourceDir)
+            }
+        }
 
-        val pluginExtension = mockk<CoverallsJacocoPluginExtension>()
-        every { pluginExtension.reportPath } returns testReport.path
-        every { pluginExtension.rootPackage } returns null
-        every { pluginExtension.reportPath } returns testReport.path
-        every { pluginExtension.reportSourceSets } returns emptySet()
+        val pluginExtension = mockk<CoverallsJacocoPluginExtension> {
+            every { reportPath } returns testReport.path
+            every { rootPackage } returns null
+            every { reportPath } returns testReport.path
+            every { reportSourceSets } returns emptySet()
+        }
 
-        val project = mockk<Project>()
-        every { project.projectDir } returns testRepo
-        every { project.extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
-        every { project.extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
+        val project = mockk<Project> {
+            every { projectDir } returns testRepo
+            every { extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
+        }
 
         optionsFunc(sourceSetContainer, pluginExtension)
 
