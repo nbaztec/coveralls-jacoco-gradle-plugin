@@ -3,8 +3,6 @@ package org.gradle.plugin.coveralls.jacoco
 import io.mockk.every
 import io.mockk.mockk
 import org.gradle.api.Project
-import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -13,21 +11,20 @@ import java.io.File
 internal class SourceReportParserTest {
     private val testReport = File("src/test/resources/testreports/jacocoTestReport.xml")
     private val testKotlinStyleSourceDir = File("src/test/resources/testrepo/src/main/kotlin")
+    private val testKotlinStyleSourceDirAdditional = File("src/test/resources/testrepo/src/anotherMain/kotlin")
     private val testJavaStyleSourceDir = File("src/test/resources/testrepo/javaStyleSrc/main/kotlin")
 
     @Test
     fun `SourceReportParser parses skips parsing if source directories empty`() {
-        val project = mockk<Project>()
-
-        val sourceSetContainer = mockk<SourceSetContainer>()
-        every { sourceSetContainer.getByName("main").allJava.srcDirs } returns emptySet()
-
-        val pluginExtension = mockk<CoverallsJacocoPluginExtension>()
-        every { pluginExtension.reportSourceSets } returns emptySet()
-
-        every { project.projectDir } returns File("src/test/resources/testrepo")
-        every { project.extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
-        every { project.extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
+        val project = mockk<Project> {
+            every { projectDir } returns File("src/test/resources/testrepo")
+            every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
+                every { getByName("main").allJava.srcDirs } returns emptySet()
+            }
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportSourceSets } returns emptySet()
+            }
+        }
 
         val actual = SourceReportParser.parse(project)
         val expected = emptyList<SourceReport>()
@@ -36,19 +33,17 @@ internal class SourceReportParserTest {
 
     @Test
     fun `SourceReportParser parses simple jacoco report with java styled package`() {
-        val project = mockk<Project>()
-
-        val sourceSetContainer = mockk<SourceSetContainer>()
-        every { sourceSetContainer.getByName("main").allJava.srcDirs } returns setOf(testJavaStyleSourceDir)
-
-        val pluginExtension = mockk<CoverallsJacocoPluginExtension>()
-        every { pluginExtension.reportPath } returns testReport.path
-        every { pluginExtension.rootPackage } returns null
-        every { pluginExtension.reportSourceSets } returns emptySet()
-
-        every { project.projectDir } returns File("src/test/resources/testrepo")
-        every { project.extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
-        every { project.extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
+        val project = mockk<Project> {
+            every { projectDir } returns File("src/test/resources/testrepo")
+            every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
+                every { getByName("main").allJava.srcDirs } returns setOf(testJavaStyleSourceDir)
+            }
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportPath } returns testReport.path
+                every { rootPackage } returns null
+                every { reportSourceSets } returns emptySet()
+            }
+        }
 
         val actual = SourceReportParser.parse(project)
         val expected = listOf(
@@ -62,19 +57,17 @@ internal class SourceReportParserTest {
 
     @Test
     fun `SourceReportParser parses simple jacoco report with kotlin styled rootPackage`() {
-        val project = mockk<Project>()
-
-        val sourceSetContainer = mockk<SourceSetContainer>()
-        every { sourceSetContainer.getByName("main").allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
-
-        val pluginExtension = mockk<CoverallsJacocoPluginExtension>()
-        every { pluginExtension.reportPath } returns testReport.path
-        every { pluginExtension.rootPackage } returns "foo.bar.baz"
-        every { pluginExtension.reportSourceSets } returns emptySet()
-
-        every { project.projectDir } returns File("src/test/resources/testrepo")
-        every { project.extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
-        every { project.extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
+        val project = mockk<Project> {
+            every { projectDir } returns File("src/test/resources/testrepo")
+            every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
+                every { getByName("main").allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
+            }
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportPath } returns testReport.path
+                every { rootPackage } returns "foo.bar.baz"
+                every { reportSourceSets } returns emptySet()
+            }
+        }
 
         val actual = SourceReportParser.parse(project)
         val expected = listOf(
@@ -93,27 +86,17 @@ internal class SourceReportParserTest {
 
     @Test
     fun `SourceReportParser uses additional source sets and parses jacoco report`() {
-        val project = mockk<Project>()
-
-        val mainSourceSet = mockk<SourceSet>()
-        every { mainSourceSet.allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
-
-        val sourceSetContainer = mockk<SourceSetContainer>()
-        every { sourceSetContainer.getByName("main") } returns mainSourceSet
-
-        val additionalSourceDirectorySet = mockk<SourceDirectorySet>()
-        every { additionalSourceDirectorySet.srcDirs } returns setOf(File("src/test/resources/testrepo/src/anotherMain/kotlin"))
-        val additionalSourceSet = mockk<SourceSet>()
-        every { additionalSourceSet.allJava } returns additionalSourceDirectorySet
-
-        val pluginExtension = mockk<CoverallsJacocoPluginExtension>()
-        every { pluginExtension.reportPath } returns testReport.path
-        every { pluginExtension.rootPackage } returns "foo.bar.baz"
-        every { pluginExtension.reportSourceSets } returns listOf(mainSourceSet, additionalSourceSet)
-
-        every { project.projectDir } returns File("src/test/resources/testrepo")
-        every { project.extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
-        every { project.extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
+        val project = mockk<Project> {
+            every { projectDir } returns File("src/test/resources/testrepo")
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportPath } returns testReport.path
+                every { rootPackage } returns "foo.bar.baz"
+                every { reportSourceSets } returns listOf(
+                        mockk { every { allJava.srcDirs } returns setOf(testKotlinStyleSourceDir) },
+                        mockk { every { allJava.srcDirs } returns setOf(testKotlinStyleSourceDirAdditional) }
+                )
+            }
+        }
 
         val actual = SourceReportParser.parse(project)
         val expected = listOf(
