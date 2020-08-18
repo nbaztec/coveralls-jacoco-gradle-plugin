@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.0.5"
+version = "1.1.0"
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
@@ -57,7 +57,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.github.nbaztec.coveralls-jacoco") version "1.0.5"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.0.6"
 }
 
 coverallsJacoco {
@@ -68,10 +68,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = "coveralls-jacoco"
-
             from(components["java"])
         }
-
     }
 }
 
