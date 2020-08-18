@@ -3,6 +3,7 @@ package org.gradle.plugin.coveralls.jacoco
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.io.File
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -11,7 +12,6 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.io.File
 
 internal class CoverallsJacocoPluginTest {
     @Test

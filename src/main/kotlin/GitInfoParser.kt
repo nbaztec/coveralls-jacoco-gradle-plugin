@@ -1,29 +1,29 @@
 package org.gradle.plugin.coveralls.jacoco
 
+import java.io.File
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.eclipse.jgit.revwalk.RevWalk
-import java.io.File
 
 data class Head(
-        val id: String,
-        val author_name: String,
-        val author_email: String,
-        val committer_name: String,
-        val committer_email: String,
-        val message: String
+    val id: String,
+    val author_name: String,
+    val author_email: String,
+    val committer_name: String,
+    val committer_email: String,
+    val message: String
 )
 
 data class Remote(
-        val name: String,
-        val url: String
+    val name: String,
+    val url: String
 )
 
 data class GitInfo(
-        val head: Head,
-        val branch: String,
-        val remotes: Collection<Remote>
+    val head: Head,
+    val branch: String,
+    val remotes: Collection<Remote>
 )
 
 object GitInfoParser {
