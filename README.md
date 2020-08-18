@@ -6,6 +6,8 @@ A jacoco test coverage reporter gradle plugin for [coveralls.io](https://coveral
 The plugin supports non-root packages in line with the recommended [Kotlin directory structure](https://kotlinlang.org/docs/reference/coding-conventions.html#directory-structure) 
 which was missing in many other plugins for the Kotlin ecosystem. 
 
+The plugin automatically detects the root package, if it conforms to Kotlin guidelines and has a `.kt` file on the root level.
+
 ## Usage
 
 [Gradle Plugin page](https://plugins.gradle.org/plugin/com.github.nbaztec.coveralls-jacoco)
@@ -32,7 +34,6 @@ Set the value of `COVERALLS_REPO_TOKEN` from the project page on coveralls.io
 
 coverallsJacoco {
     reportPath = "" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
-    rootPackage = "com.github.nbaztec.foo" // optional, leave out if project has a normal java styled directory structure  
     reportSourceSets = [ sourceSets.foo, sourceSets.bar ] // optional, default: main
     apiEndpoint = "" // optional, default: https://coveralls.io/api/v1/jobs 
 }
@@ -46,6 +47,44 @@ jacocoTestReport {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: "com/foo/**")
         })
+    }
+}
+```
+
+## Multi-Project Support
+To consolidate multiple JaCoCo coverage reports, the following code can be used to add a new task `codeCoverageReport`
+```kotlin
+tasks.register<JacocoReport>("codeCoverageReport") {
+    // If a subproject applies the 'jacoco' plugin, add the result it to the report
+    subprojects {
+        val subproject = this
+        subproject.plugins.withType<JacocoPlugin>().configureEach {
+            subproject.tasks.matching({ it.extensions.findByType<JacocoTaskExtension>() != null }).configureEach {
+                val testTask = this
+                sourceSets(subproject.sourceSets.main.get())
+                executionData(testTask)
+            }
+
+            // To automatically run `test` every time `./gradlew codeCoverageReport` is called,
+            // you may want to set up a task dependency between them as shown below.
+            // Note that this requires the `test` tasks to be resolved eagerly (see `forEach`) which
+            // may have a negative effect on the configuration time of your build.
+            subproject.tasks.matching({ it.extensions.findByType<JacocoTaskExtension>() != null }).forEach {
+                rootProject.tasks["codeCoverageReport"].dependsOn(it)
+            }
+        }
+    }
+
+
+    // enable the different report types (html, xml, csv)
+    reports {
+        // xml is usually used to integrate code coverage with
+        // other tools like SonarQube, Coveralls or Codecov
+        xml.isEnabled = true
+
+        // HTML reports can be used to see code coverage
+        // without any external tools
+        html.isEnabled = true
     }
 }
 ```
