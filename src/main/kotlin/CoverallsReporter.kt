@@ -59,7 +59,6 @@ class CoverallsReporter(val envGetter: EnvGetter) {
                 sourceFiles
         )
 
-
         send(pluginExtension.apiEndpoint, req)
     }
 
