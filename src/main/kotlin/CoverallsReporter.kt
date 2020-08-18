@@ -1,6 +1,5 @@
 package org.gradle.plugin.coveralls.jacoco
 
-
 import com.google.gson.Gson
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpPost
@@ -12,14 +11,13 @@ import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.gradle.api.Project
 
-
 data class Request(
-        val repo_token: String,
-        val service_name: String,
-        val service_job_id: String?,
-        val service_pull_request: String?,
-        val git: GitInfo?,
-        val source_files: List<SourceReport>
+    val repo_token: String,
+    val service_name: String,
+    val service_job_id: String?,
+    val service_pull_request: String?,
+    val git: GitInfo?,
+    val source_files: List<SourceReport>
 )
 
 private fun Request.json() = Gson().toJson(this)

@@ -1,13 +1,13 @@
 package org.gradle.plugin.coveralls.jacoco
 
+import java.io.File
+import java.math.BigInteger
+import java.security.MessageDigest
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.dom4j.io.SAXReader
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
-import java.io.File
-import java.math.BigInteger
-import java.security.MessageDigest
 
 data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)
 
