@@ -31,6 +31,8 @@ class CoverallsReporter(val envGetter: EnvGetter) {
     private val defaultHttpTimeoutMs = 10 * 1000
 
     fun report(project: Project) {
+        val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
+
         logger.info("retrieving git info")
         val gitInfo = GitInfoParser.parse(project.projectDir)
 
@@ -56,7 +58,7 @@ class CoverallsReporter(val envGetter: EnvGetter) {
                 gitInfo,
                 sourceFiles
         )
-        val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
+
 
         send(pluginExtension.apiEndpoint, req)
     }

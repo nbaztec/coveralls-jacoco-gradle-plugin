@@ -54,6 +54,14 @@ internal class DataClassTest {
     }
 
     @Test
+    fun `data class Key`() {
+        val cov = arrayListOf(1, null)
+        val key = Key("1", "2")
+        assertEquals("1", key.pkg)
+        assertEquals("2", key.file)
+    }
+
+    @Test
     fun `data class Request`() {
         val gitInfo = mockk<GitInfo>()
         val sourceFiles = emptyList<SourceReport>()

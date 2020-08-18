@@ -11,28 +11,25 @@ import java.security.MessageDigest
 
 data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)
 
+data class Key(val pkg: String, val file: String)
+
 object SourceReportParser {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
 
-    private fun read(reportPath: String, rootPackage: String?): Map<String, Map<Int, Int>> {
+    private fun read(reportPath: String): Map<Key, Map<Int, Int>> {
         val reader = SAXReader()
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
         val document = reader.read(File(reportPath))
         val root = document.rootElement
 
-        val rootPackagePath = rootPackage?.replace(".", "/")
-
-        val fullCoverage = mutableMapOf<String, MutableMap<Int, Int>>()
+        val fullCoverage = mutableMapOf<Key, MutableMap<Int, Int>>()
         root.elements("package").forEach { pkg ->
             val pkgName = pkg.attributeValue("name")
-            val path = rootPackagePath?.let {
-                pkgName.replaceFirst("^$it".toRegex(), "")
-            } ?: pkgName
 
             pkg.elements("sourcefile").forEach { sf ->
                 val sfName = sf.attributeValue("name")
-                val key = "$path/$sfName"
+                val key = Key(pkgName, sfName)
 
                 if (fullCoverage[key] == null) {
                     fullCoverage[key] = mutableMapOf()
@@ -70,13 +67,12 @@ object SourceReportParser {
             return emptyList()
         }
 
+        val fileFinder = FileFinder(sourceDirs)
+
         logger.info("using source directories: $sourceDirs")
-        return read(pluginExtension.reportPath, pluginExtension.rootPackage)
-                .mapNotNull { (filename, cov) ->
-                    sourceDirs.find {
-                        File(it, filename).exists()
-                    }?.let { dir ->
-                        val f = File(dir, filename)
+        return read(pluginExtension.reportPath)
+                .mapNotNull { (key, cov) ->
+                    fileFinder.find(File(key.pkg, key.file))?.let { f ->
                         logger.debug("found file: $f")
 
                         val lines = f.readLines()
@@ -87,7 +83,8 @@ object SourceReportParser {
                         val relPath = File(project.projectDir.absolutePath).toURI().relativize(f.toURI()).toString()
                         SourceReport(relPath, f.md5(), lineHits.toList())
                     }.also {
-                        it ?: logger.info("$filename could not be found in any of the source directories, skipping")
+                        it
+                                ?: logger.info("${key.file} could not be found in any of the source directories, skipping")
                     }
                 }
     }

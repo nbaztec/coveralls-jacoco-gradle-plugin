@@ -85,7 +85,7 @@ internal class SourceReportParserTest {
     }
 
     @Test
-    fun `SourceReportParser uses additional source sets and parses jacoco report`() {
+    fun `SourceReportParser uses report source sets and parses jacoco report`() {
         val project = mockk<Project> {
             every { projectDir } returns File("src/test/resources/testrepo")
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
@@ -110,7 +110,7 @@ internal class SourceReportParserTest {
                         listOf(null, null, null, null, 1, 1, 1, null, null)
                 ),
                 SourceReport(
-                        "src/anotherMain/kotlin/lib/Lib.kt",
+                        "src/anotherMain/kotlin/Lib.kt",
                         "8b5c1c773cf81996efc19a08f0ac3648",
                         listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
                 )
