@@ -1,10 +1,10 @@
 package org.gradle.plugin.coveralls.jacoco
 
+import java.io.File
 import org.gradle.internal.impldep.com.google.common.io.Files
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import java.io.File
 
 internal class GitInfoParserTest {
     private val testRepo = File("src/test/resources/testrepo")
