@@ -37,10 +37,10 @@ internal class DataClassTest {
 
     @Test
     fun `data class ServiceInfo`() {
-        val svcInfo = ServiceInfo("1", "2", "job number", "3", "4")
+        val svcInfo = ServiceInfo("1", "job number", "2", "3", "4")
         assertEquals("1", svcInfo.name)
-        assertEquals("2", svcInfo.jobId)
         assertEquals("job number", svcInfo.number)
+        assertEquals("2", svcInfo.jobId)
         assertEquals("3", svcInfo.pr)
         assertEquals("4", svcInfo.branch)
     }

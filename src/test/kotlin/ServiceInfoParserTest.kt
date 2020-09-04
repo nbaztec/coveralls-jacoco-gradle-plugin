@@ -167,7 +167,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo(name = "buildkite", jobId = "58b195c0-94aa-43ba-ae43-00b93c29a8b7", number = "123", pr = "11", branch = "foobar")
+        val expected = ServiceInfo(name = "buildkite", number = "123", jobId = "58b195c0-94aa-43ba-ae43-00b93c29a8b7", pr = "11", branch = "foobar")
         assertEquals(expected, actual)
     }
 
