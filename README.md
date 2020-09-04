@@ -1,5 +1,5 @@
 # Coveralls Jacoco Gradle Plugin
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Coverage Status](https://coveralls.io/repos/github/nbaztec/coveralls-jacoco-gradle-plugin/badge.svg?branch=master)](https://coveralls.io/github/nbaztec/coveralls-jacoco-gradle-plugin?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Coverage Status](https://coveralls.io/repos/github/nbaztec/coveralls-jacoco-gradle-plugin/badge.svg?branch=main)](https://coveralls.io/github/nbaztec/coveralls-jacoco-gradle-plugin?branch=main)
 
 A jacoco test coverage reporter gradle plugin for [coveralls.io](https://coveralls.io).
 
