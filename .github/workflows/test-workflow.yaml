@@ -12,6 +12,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: test and publish coverage
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: ./gradlew jacocoTestReport coverallsJacoco
+      run: export COVERALLS_REPO_TOKEN=$(cat .coveralls | base64 -d | xargs) && ./gradlew jacocoTestReport coverallsJacoco
