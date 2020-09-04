@@ -15,6 +15,7 @@ data class Request(
     val repo_token: String,
     val service_name: String,
     val service_job_id: String?,
+    val service_number: String?,
     val service_pull_request: String?,
     val git: GitInfo?,
     val source_files: List<SourceReport>
@@ -51,6 +52,7 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         val req = Request(
                 repoToken,
                 serviceInfo.name,
+                serviceInfo.number,
                 serviceInfo.jobId,
                 serviceInfo.pr,
                 gitInfo,

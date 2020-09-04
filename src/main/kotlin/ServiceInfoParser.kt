@@ -1,6 +1,6 @@
 package org.gradle.plugin.coveralls.jacoco
 
-data class ServiceInfo(val name: String, val jobId: String? = null, val pr: String? = null, val branch: String? = null)
+data class ServiceInfo(val name: String, val number: String? = null, val jobId: String? = null, val pr: String? = null, val branch: String? = null)
 
 class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isJenkins = envGetter("JENKINS_URL") != null
@@ -8,44 +8,50 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isCircleCI = envGetter("CIRCLECI") == "true"
     private val isCodeship = envGetter("CI_NAME") == "codeship"
     private val isGithubActions = envGetter("GITHUB_ACTIONS") != null
+    private val isBuildkite = envGetter("BUILDKITE") == "true"
 
     fun parse(): ServiceInfo {
         return when {
             isJenkins -> ServiceInfo(
-                    "jenkins",
-                    envGetter("BUILD_NUMBER"),
-                    envGetter("ghprbPullId"),
-                    envGetter("GIT_BRANCH")
+                    name = "jenkins",
+                    jobId = envGetter("BUILD_NUMBER"),
+                    pr = envGetter("ghprbPullId"),
+                    branch = envGetter("GIT_BRANCH")
             )
             isTravis -> ServiceInfo(
-                    envGetter("CI_NAME") ?: "travis-pro",
-                    envGetter("TRAVIS_JOB_ID"),
-                    envGetter("TRAVIS_PULL_REQUEST"),
-                    envGetter("TRAVIS_BRANCH")
+                    name = envGetter("CI_NAME") ?: "travis-pro",
+                    jobId = envGetter("TRAVIS_JOB_ID"),
+                    pr = envGetter("TRAVIS_PULL_REQUEST"),
+                    branch = envGetter("TRAVIS_BRANCH")
             )
-            isCircleCI -> {
-                ServiceInfo(
-                        "circleci",
-                        envGetter("CIRCLE_BUILD_NUM"),
-                        envGetter("CIRCLE_PULL_REQUEST")?.substringAfterLast("/"),
-                        envGetter("CIRCLE_BRANCH")
-                )
-            }
+            isCircleCI -> ServiceInfo(
+                    name = "circleci",
+                    jobId = envGetter("CIRCLE_BUILD_NUM"),
+                    pr = envGetter("CIRCLE_PULL_REQUEST")?.substringAfterLast("/"),
+                    branch = envGetter("CIRCLE_BRANCH")
+            )
             isCodeship -> ServiceInfo(
-                    "codeship",
-                    envGetter("CI_BUILD_NUMBER"),
-                    envGetter("CI_PR_NUMBER"),
-                    envGetter("CI_BRANCH")
+                    name = "codeship",
+                    jobId = envGetter("CI_BUILD_NUMBER"),
+                    pr = envGetter("CI_PR_NUMBER"),
+                    branch = envGetter("CI_BRANCH")
             )
             isGithubActions -> ServiceInfo(
-                    "github-actions",
-                    envGetter("BUILD_NUMBER"),
-                    envGetter("GITHUB_REF")?.let { ref ->
+                    name = "github-actions",
+                    jobId = envGetter("BUILD_NUMBER"),
+                    pr = envGetter("GITHUB_REF")?.let { ref ->
                         "refs/pull/(\\d+)/merge".toRegex().find(ref)?.let {
                             it.groupValues[1]
                         }
                     },
-                    envGetter("CI_BRANCH")
+                    branch = envGetter("CI_BRANCH")
+            )
+            isBuildkite -> ServiceInfo(
+                    name = "buildkite",
+                    number = envGetter("BUILDKITE_BUILD_NUMBER"),
+                    jobId = envGetter("BUILDKITE_BUILD_ID"),
+                    pr = if (envGetter("BUILDKITE_PULL_REQUEST") == "false")  null else envGetter("BUILDKITE_PULL_REQUEST"),
+                    branch = envGetter("BUILDKITE_BRANCH")
             )
             else -> ServiceInfo("other")
         }

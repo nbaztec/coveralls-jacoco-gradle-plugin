@@ -14,7 +14,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("jenkins", "1", "123", "foobar")
+        val expected = ServiceInfo(name = "jenkins", jobId = "1", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -27,7 +27,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("jenkins", "1", null, "master")
+        val expected = ServiceInfo(name = "jenkins", jobId = "1", pr = null, branch = "master")
         assertEquals(expected, actual)
     }
 
@@ -42,7 +42,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("travis-ci", "1", "123", "foobar")
+        val expected = ServiceInfo(name = "travis-ci", jobId = "1", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -56,7 +56,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("travis-pro", "1", "123", "foobar")
+        val expected = ServiceInfo(name = "travis-pro", jobId = "1", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -69,7 +69,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("travis-pro", "1", null, "master")
+        val expected = ServiceInfo(name = "travis-pro", jobId = "1", pr = null, branch = "master")
         assertEquals(expected, actual)
     }
 
@@ -83,7 +83,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("circleci", "1", "123", "foobar")
+        val expected = ServiceInfo(name = "circleci", jobId = "1", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -96,7 +96,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("circleci", "1", null, "master")
+        val expected = ServiceInfo(name = "circleci", jobId = "1", pr = null, branch = "master")
         assertEquals(expected, actual)
     }
 
@@ -110,7 +110,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("codeship", "1", "123", "foobar")
+        val expected = ServiceInfo(name = "codeship", jobId = "1", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -123,7 +123,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("codeship", "1", null, "master")
+        val expected = ServiceInfo(name = "codeship", jobId = "1",pr = null, branch = "master")
         assertEquals(expected, actual)
     }
 
@@ -137,7 +137,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("github-actions", "1", "123", "foobar")
+        val expected = ServiceInfo(name = "github-actions", jobId = "1", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -150,7 +150,24 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo("github-actions", "1", null, "master")
+        val expected = ServiceInfo(name = "github-actions", jobId = "1", pr = null, branch = "master")
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `ServiceInfoParser parses buildkite env`() {
+        val envGetter = createEnvGetter(mapOf(
+                "BUILDKITE" to "true",
+                "BUILDKITE_BUILD_NUMBER" to "123",
+                "BUILDKITE_BUILD_URL" to "https://buildkite.com/your-org/your-repo/builds/123",
+                "BUILDKITE_BUILD_ID" to "58b195c0-94aa-43ba-ae43-00b93c29a8b7",
+                "BUILDKITE_BRANCH" to "foobar",
+                "BUILDKITE_COMMIT" to "231asdfadsf424",
+                "BUILDKITE_PULL_REQUEST" to "11"
+        ))
+
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo(name = "buildkite", jobId = "58b195c0-94aa-43ba-ae43-00b93c29a8b7", number = "123", pr = "11", branch = "foobar")
         assertEquals(expected, actual)
     }
 

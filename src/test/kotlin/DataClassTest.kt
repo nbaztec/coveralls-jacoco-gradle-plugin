@@ -37,9 +37,10 @@ internal class DataClassTest {
 
     @Test
     fun `data class ServiceInfo`() {
-        val svcInfo = ServiceInfo("1", "2", "3", "4")
+        val svcInfo = ServiceInfo("1", "2", "job number", "3", "4")
         assertEquals("1", svcInfo.name)
         assertEquals("2", svcInfo.jobId)
+        assertEquals("job number", svcInfo.number)
         assertEquals("3", svcInfo.pr)
         assertEquals("4", svcInfo.branch)
     }
@@ -65,9 +66,10 @@ internal class DataClassTest {
     fun `data class Request`() {
         val gitInfo = mockk<GitInfo>()
         val sourceFiles = emptyList<SourceReport>()
-        val req = Request("1", "2", "3", "4", gitInfo, sourceFiles)
+        val req = Request("1", "2", "job number", "3", "4", gitInfo, sourceFiles)
         assertEquals("1", req.repo_token)
         assertEquals("2", req.service_name)
+        assertEquals("job number", req.service_number)
         assertEquals("3", req.service_job_id)
         assertEquals("4", req.service_pull_request)
         assertEquals(gitInfo, req.git)
