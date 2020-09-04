@@ -97,6 +97,7 @@ The plugin can be used with the following CI providers:
 * Github Actions
 * Jenkins
 * Codeship
+* Buildkite
 
 
 ### Travis
@@ -131,3 +132,7 @@ jobs:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: ./gradlew test jacocoTestReport coverallsJacoco
 ```
+
+### Buildkite
+
+See [buildkite environment variables documentation](https://buildkite.com/docs/pipelines/environment-variables#defining-your-own)
