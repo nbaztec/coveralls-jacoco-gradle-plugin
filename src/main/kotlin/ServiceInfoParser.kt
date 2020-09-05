@@ -1,6 +1,6 @@
 package org.gradle.plugin.coveralls.jacoco
 
-data class ServiceInfo(val name: String, val number: String? = null, val jobId: String? = null, val pr: String? = null, val branch: String? = null)
+data class ServiceInfo(val name: String, val repoName: String? = null, val number: String? = null, val jobId: String? = null, val pr: String? = null, val branch: String? = null)
 
 class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isJenkins = envGetter("JENKINS_URL") != null
@@ -8,6 +8,7 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isCircleCI = envGetter("CIRCLECI") == "true"
     private val isCodeship = envGetter("CI_NAME") == "codeship"
     private val isGithubActions = envGetter("GITHUB_ACTIONS") != null
+    private val isGithubActionsToken = envGetter("GITHUB_TOKEN") != null
     private val isBuildkite = envGetter("BUILDKITE") == "true"
 
     fun parse(): ServiceInfo {
@@ -34,6 +35,17 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
                     name = "codeship",
                     jobId = envGetter("CI_BUILD_NUMBER"),
                     pr = envGetter("CI_PR_NUMBER"),
+                    branch = envGetter("CI_BRANCH")
+            )
+            isGithubActions && isGithubActionsToken -> ServiceInfo(
+                    name = "github",
+                    repoName = envGetter("GITHUB_REPOSITORY"),
+                    jobId = envGetter("BUILD_NUMBER"),
+                    pr = envGetter("GITHUB_REF")?.let { ref ->
+                        "refs/pull/(\\d+)/merge".toRegex().find(ref)?.let {
+                            it.groupValues[1]
+                        }
+                    },
                     branch = envGetter("CI_BRANCH")
             )
             isGithubActions -> ServiceInfo(

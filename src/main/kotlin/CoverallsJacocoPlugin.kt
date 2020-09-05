@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 
 open class CoverallsJacocoPluginExtension {
+    @Deprecated("the plugin now auto detects the root package")
     var rootPackage: String? = null
     var reportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
     var apiEndpoint = "https://coveralls.io/api/v1/jobs"

@@ -12,8 +12,21 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 internal class CoverallsJacocoPluginTest {
+    @Test
+    fun `CoverallsJacocoPluginExtension deprecates rootPackage`() {
+        val ext = CoverallsJacocoPluginExtension()
+        val actual = ext::class.memberProperties.find { it.name == "rootPackage" }!!.let {
+            it.isAccessible = true
+            it.annotations.first().annotationClass
+        }
+
+        assertEquals(Deprecated::class, actual)
+    }
+
     @Test
     fun `CoverallsJacocoPlugin creates extension and task with correct name`() {
         val project = mockk<Project>(relaxed = true)
@@ -46,7 +59,6 @@ internal class CoverallsJacocoPluginTest {
     fun `CoverallsJacocoPluginExtension has meaningful defaults`() {
         val extension = CoverallsJacocoPluginExtension()
         assertEquals(extension.reportPath, "build/reports/jacoco/test/jacocoTestReport.xml")
-        assertEquals(extension.rootPackage, null)
         assertEquals(extension.reportSourceSets, emptySet<SourceSet>())
         assertEquals(extension.apiEndpoint, "https://coveralls.io/api/v1/jobs")
     }

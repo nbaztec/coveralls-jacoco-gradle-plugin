@@ -37,12 +37,13 @@ internal class DataClassTest {
 
     @Test
     fun `data class ServiceInfo`() {
-        val svcInfo = ServiceInfo("1", "job number", "2", "3", "4")
-        assertEquals("1", svcInfo.name)
-        assertEquals("job number", svcInfo.number)
-        assertEquals("2", svcInfo.jobId)
-        assertEquals("3", svcInfo.pr)
-        assertEquals("4", svcInfo.branch)
+        val svcInfo = ServiceInfo("name", "repo_name","number", "jobId", "pr", "branch")
+        assertEquals("name", svcInfo.name)
+        assertEquals("repo_name", svcInfo.repoName)
+        assertEquals("number", svcInfo.number)
+        assertEquals("jobId", svcInfo.jobId)
+        assertEquals("pr", svcInfo.pr)
+        assertEquals("branch", svcInfo.branch)
     }
 
     @Test
@@ -65,12 +66,22 @@ internal class DataClassTest {
     fun `data class Request`() {
         val gitInfo = mockk<GitInfo>()
         val sourceFiles = emptyList<SourceReport>()
-        val req = Request("1", "2", "job number", "3", "4", gitInfo, sourceFiles)
-        assertEquals("1", req.repo_token)
-        assertEquals("2", req.service_name)
-        assertEquals("job number", req.service_number)
-        assertEquals("3", req.service_job_id)
-        assertEquals("4", req.service_pull_request)
+        val req = Request(
+                "repo_token",
+                "service_name",
+                "repo_name",
+                "service_number",
+                "service_job_id",
+                "service_pull_request",
+                gitInfo,
+                sourceFiles
+        )
+        assertEquals("repo_token", req.repo_token)
+        assertEquals("service_name", req.service_name)
+        assertEquals("repo_name", req.repo_name)
+        assertEquals("service_number", req.service_number)
+        assertEquals("service_job_id", req.service_job_id)
+        assertEquals("service_pull_request", req.service_pull_request)
         assertEquals(gitInfo, req.git)
         assertEquals(sourceFiles, req.source_files)
     }
