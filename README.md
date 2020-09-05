@@ -133,6 +133,18 @@ jobs:
       run: ./gradlew test jacocoTestReport coverallsJacoco
 ```
 
+For running on publicly forked PRs, the plugin uses a (undocumented) API and uses `GITHUB_TOKEN` to identify the repo instead, as follows:
+```yaml
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: test and publish coverage
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: ./gradlew test jacocoTestReport coverallsJacoco
+```
 ### Buildkite
 
 See [buildkite environment variables documentation](https://buildkite.com/docs/pipelines/environment-variables#defining-your-own)

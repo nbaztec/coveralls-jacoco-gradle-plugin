@@ -128,6 +128,22 @@ internal class ServiceInfoParserTest {
     }
 
     @Test
+    fun `ServiceInfoParser parses github env on pr`() {
+        val envGetter = createEnvGetter(mapOf(
+                "GITHUB_ACTIONS" to "true",
+                "GITHUB_REPOSITORY" to "foo/bar",
+                "GITHUB_TOKEN" to "token",
+                "BUILD_NUMBER" to "1",
+                "GITHUB_REF" to "refs/pull/123/merge",
+                "CI_BRANCH" to "foobar"
+        ))
+
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo(name = "github", repoName = "foo/bar", jobId = "1", pr = "123", branch = "foobar")
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun `ServiceInfoParser parses github actions env on pr`() {
         val envGetter = createEnvGetter(mapOf(
                 "GITHUB_ACTIONS" to "true",

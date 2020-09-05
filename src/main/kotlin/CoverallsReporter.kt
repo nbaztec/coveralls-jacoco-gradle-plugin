@@ -14,6 +14,7 @@ import org.gradle.api.Project
 data class Request(
     val repo_token: String,
     val service_name: String,
+    val repo_name: String?,
     val service_number: String?,
     val service_job_id: String?,
     val service_pull_request: String?,
@@ -46,12 +47,13 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         logger.info("retrieving ci service info")
         val serviceInfo = ServiceInfoParser(envGetter).parse()
 
-        val repoToken = envGetter("COVERALLS_REPO_TOKEN")
+        val repoToken = envGetter("COVERALLS_REPO_TOKEN") ?: envGetter("GITHUB_TOKEN")
         check(repoToken != null && repoToken.isNotBlank()) { "COVERALLS_REPO_TOKEN not set" }
 
         val req = Request(
                 repoToken,
                 serviceInfo.name,
+                serviceInfo.repoName,
                 serviceInfo.number,
                 serviceInfo.jobId,
                 serviceInfo.pr,
