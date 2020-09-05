@@ -19,12 +19,14 @@ internal class CoverallsJacocoPluginTest {
     @Test
     fun `CoverallsJacocoPluginExtension deprecates rootPackage`() {
         val ext = CoverallsJacocoPluginExtension()
+        ext.rootPackage = "test"
         val actual = ext::class.memberProperties.find { it.name == "rootPackage" }!!.let {
             it.isAccessible = true
             it.annotations.first().annotationClass
         }
 
         assertEquals(Deprecated::class, actual)
+        assertEquals("test", ext.rootPackage)
     }
 
     @Test
