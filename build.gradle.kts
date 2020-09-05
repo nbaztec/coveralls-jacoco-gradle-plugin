@@ -60,9 +60,6 @@ plugins {
     id("com.github.nbaztec.coveralls-jacoco") version "1.1.2-beta1"
 }
 
-coverallsJacoco {
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {

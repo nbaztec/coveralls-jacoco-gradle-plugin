@@ -190,7 +190,6 @@ Content-Transfer-Encoding: binary
 
         val pluginExtension = mockk<CoverallsJacocoPluginExtension> {
             every { reportPath } returns testReport.path
-            every { rootPackage } returns null
             every { reportPath } returns testReport.path
             every { reportSourceSets } returns emptySet()
         }

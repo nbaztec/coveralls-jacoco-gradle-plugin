@@ -46,7 +46,6 @@ internal class CoverallsJacocoPluginTest {
     fun `CoverallsJacocoPluginExtension has meaningful defaults`() {
         val extension = CoverallsJacocoPluginExtension()
         assertEquals(extension.reportPath, "build/reports/jacoco/test/jacocoTestReport.xml")
-        assertEquals(extension.rootPackage, null)
         assertEquals(extension.reportSourceSets, emptySet<SourceSet>())
         assertEquals(extension.apiEndpoint, "https://coveralls.io/api/v1/jobs")
     }
