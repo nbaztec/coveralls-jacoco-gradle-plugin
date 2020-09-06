@@ -3,11 +3,11 @@ package org.gradle.plugin.coveralls.jacoco
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import io.mockk.every
 import io.mockk.mockk
-import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.io.File
 
 internal class SourceReportParserTest {
     private val testReport = File("src/test/resources/testreports/jacocoTestReport.xml")

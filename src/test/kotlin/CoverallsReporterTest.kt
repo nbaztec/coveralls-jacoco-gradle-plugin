@@ -6,23 +6,18 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verifyAll
-import java.io.File
-import java.io.PrintWriter
-import java.net.InetSocketAddress
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
-import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.internal.impldep.com.google.common.io.Files
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertThrows
+import java.io.File
+import java.io.PrintWriter
+import java.net.InetSocketAddress
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class CoverallsReporterTest {

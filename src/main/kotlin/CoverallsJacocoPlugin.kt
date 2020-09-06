@@ -2,7 +2,6 @@ package org.gradle.plugin.coveralls.jacoco
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSet
 import java.io.File
 
 open class CoverallsJacocoPluginExtension {
