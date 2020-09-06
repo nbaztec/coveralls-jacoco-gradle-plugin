@@ -1,18 +1,14 @@
 package org.gradle.plugin.coveralls.jacoco
 
-import com.android.build.gradle.api.AndroidBasePlugin
-import com.android.build.gradle.api.AndroidSourceDirectorySet
-import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import java.io.File
-import java.math.BigInteger
-import java.security.MessageDigest
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.dom4j.io.SAXReader
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
-import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
+import java.io.File
+import java.math.BigInteger
+import java.security.MessageDigest
 
 
 data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)

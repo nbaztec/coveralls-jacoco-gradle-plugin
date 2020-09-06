@@ -1,11 +1,11 @@
 package org.gradle.plugin.coveralls.jacoco
 
-import java.io.File
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import java.io.File
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 internal class FileFinderTest {
     private val kotlinSrc = File("src/test/resources/testfiles/kotlinSrc")

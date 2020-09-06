@@ -1,8 +1,8 @@
 package org.gradle.plugin.coveralls.jacoco
 
-import java.io.File
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
+import java.io.File
 
 class FileFinder(private val dirs: Iterable<File>) {
     private val logger: Logger by lazy { LogManager.getLogger(FileFinder::class.java) }
