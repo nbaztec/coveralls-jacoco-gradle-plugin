@@ -34,7 +34,7 @@ Set the value of `COVERALLS_REPO_TOKEN` from the project page on coveralls.io
 
 coverallsJacoco {
     reportPath = "" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
-    reportSourceSets = [ sourceSets.foo, sourceSets.bar ] // optional, default: main
+    reportSourceSets += sourceSets.foo.allJava.srcDirs + sourceSets.bar.allJava.srcDirs // optional, default: main
     apiEndpoint = "" // optional, default: https://coveralls.io/api/v1/jobs 
 }
 ```
