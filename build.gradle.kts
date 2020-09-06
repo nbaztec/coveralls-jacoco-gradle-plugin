@@ -1,7 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.2.1"
+version = "1.2.2"
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
@@ -25,7 +33,7 @@ dependencies {
     implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.8.1.202007141445-r")
     implementation("org.apache.httpcomponents", "httpmime", "4.5.12")
     implementation("com.google.code.gson", "gson", "2.8.5")
-    api("com.android.tools.build", "gradle", "4.0.1")
+    implementation("com.android.tools.build", "gradle", "4.0.1")
     testImplementation("junit", "junit", "4.13")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.6.2")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.6.2")
@@ -64,7 +72,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.github.nbaztec.coveralls-jacoco") version "1.1.2"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.2-beta2"
 }
 
 publishing {
