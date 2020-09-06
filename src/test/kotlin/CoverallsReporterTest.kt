@@ -1,5 +1,6 @@
 package org.gradle.plugin.coveralls.jacoco
 
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.sun.net.httpserver.HttpServer
 import io.mockk.every
 import io.mockk.mockk
@@ -13,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
+import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.internal.impldep.com.google.common.io.Files
 import org.junit.jupiter.api.AfterAll
@@ -196,6 +198,7 @@ Content-Transfer-Encoding: binary
 
         val project = mockk<Project> {
             every { projectDir } returns testRepo
+            every { extensions.findByType(BaseAppModuleExtension::class.java) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
         }
