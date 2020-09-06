@@ -1,5 +1,9 @@
 package org.gradle.plugin.coveralls.jacoco
 
+import com.android.build.gradle.api.AndroidBasePlugin
+import com.android.build.gradle.api.AndroidSourceDirectorySet
+import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -8,6 +12,8 @@ import org.apache.log4j.Logger
 import org.dom4j.io.SAXReader
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
+import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
+
 
 data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)
 
@@ -58,9 +64,14 @@ object SourceReportParser {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
-            project.extensions.getByType(SourceSetContainer::class.java).getByName("main").allJava.srcDirs.filterNotNull()
+            val androidExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)
+            androidExtension?.let {
+                androidExtension.sourceSets.getByName("main").java.srcDirs.filterNotNull()
+            } ?: project.extensions.getByType(SourceSetContainer::class.java)
+                    .getByName("main").allJava.srcDirs.filterNotNull()
+
         } else {
-            pluginExtension.reportSourceSets.flatMap { it.allJava.srcDirs }.filterNotNull()
+            pluginExtension.reportSourceSets.toList()
         }
 
         if (sourceDirs.isEmpty()) {
