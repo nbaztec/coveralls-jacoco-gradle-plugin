@@ -36,13 +36,14 @@ internal class ServiceInfoParserTest {
         val envGetter = createEnvGetter(mapOf(
                 "TRAVIS" to "true",
                 "CI_NAME" to "travis-ci",
-                "TRAVIS_JOB_ID" to "1",
+                "TRAVIS_BUILD_NUMBER" to "1",
+                "TRAVIS_JOB_ID" to "2",
                 "TRAVIS_PULL_REQUEST" to "123",
                 "TRAVIS_BRANCH" to "foobar"
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo(name = "travis-ci", jobId = "1", pr = "123", branch = "foobar")
+        val expected = ServiceInfo(name = "travis-ci", number = "1", jobId = "2", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 

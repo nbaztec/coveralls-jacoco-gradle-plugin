@@ -30,6 +30,7 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
             )
             isTravis -> ServiceInfo(
                     name = envGetter("CI_NAME") ?: "travis-pro",
+                    number = envGetter("TRAVIS_BUILD_NUMBER"),
                     jobId = envGetter("TRAVIS_JOB_ID"),
                     pr = envGetter("TRAVIS_PULL_REQUEST"),
                     branch = envGetter("TRAVIS_BRANCH")
