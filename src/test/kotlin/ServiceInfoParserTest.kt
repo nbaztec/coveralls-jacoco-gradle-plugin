@@ -77,13 +77,14 @@ internal class ServiceInfoParserTest {
     fun `ServiceInfoParser parses circleci env on pr`() {
         val envGetter = createEnvGetter(mapOf(
                 "CIRCLECI" to "true",
-                "CIRCLE_BUILD_NUM" to "1",
+                "CIRCLE_WORKFLOW_ID" to "1",
+                "CIRCLE_BUILD_NUM" to "2",
                 "CIRCLE_PULL_REQUEST" to "https://github.com/username/repo/pull/123",
                 "CIRCLE_BRANCH" to "foobar"
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo(name = "circleci", jobId = "1", pr = "123", branch = "foobar")
+        val expected = ServiceInfo(name = "circleci", number = "1", jobNumber = "2", pr = "123", branch = "foobar")
         assertEquals(expected, actual)
     }
 
@@ -91,12 +92,13 @@ internal class ServiceInfoParserTest {
     fun `ServiceInfoParser parses circleci env on master`() {
         val envGetter = createEnvGetter(mapOf(
                 "CIRCLECI" to "true",
-                "CIRCLE_BUILD_NUM" to "1",
+                "CIRCLE_WORKFLOW_ID" to "1",
+                "CIRCLE_BUILD_NUM" to "2",
                 "CIRCLE_BRANCH" to "master"
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo(name = "circleci", jobId = "1", pr = null, branch = "master")
+        val expected = ServiceInfo(name = "circleci", number = "1", jobNumber = "2", pr = null, branch = "master")
         assertEquals(expected, actual)
     }
 
@@ -183,7 +185,7 @@ internal class ServiceInfoParserTest {
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo(name = "buildkite", number = "123", jobId = "58b195c0-94aa-43ba-ae43-00b93c29a8b7", pr = "11", branch = "foobar")
+        val expected = ServiceInfo(name = "buildkite", number = "123", jobId = "58b195c0-94aa-43ba-ae43-00b93c29a8b7", pr = "11", branch = "foobar", buildUrl = "https://buildkite.com/your-org/your-repo/builds/123")
         assertEquals(expected, actual)
     }
 

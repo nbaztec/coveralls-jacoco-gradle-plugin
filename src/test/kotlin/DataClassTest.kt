@@ -37,13 +37,15 @@ internal class DataClassTest {
 
     @Test
     fun `data class ServiceInfo`() {
-        val svcInfo = ServiceInfo("name", "repo_name","number", "jobId", "pr", "branch")
+        val svcInfo = ServiceInfo("name", "repo_name","number", "jobId", "jobNumber", "pr", "branch", "buildNumber")
         assertEquals("name", svcInfo.name)
         assertEquals("repo_name", svcInfo.repoName)
         assertEquals("number", svcInfo.number)
         assertEquals("jobId", svcInfo.jobId)
+        assertEquals("jobNumber", svcInfo.jobNumber)
         assertEquals("pr", svcInfo.pr)
         assertEquals("branch", svcInfo.branch)
+        assertEquals("buildNumber", svcInfo.buildUrl)
     }
 
     @Test
@@ -72,7 +74,10 @@ internal class DataClassTest {
                 "repo_name",
                 "service_number",
                 "service_job_id",
+                "service_job_number",
                 "service_pull_request",
+                "service_branch",
+                "service_build_url",
                 gitInfo,
                 sourceFiles
         )
@@ -81,7 +86,10 @@ internal class DataClassTest {
         assertEquals("repo_name", req.repo_name)
         assertEquals("service_number", req.service_number)
         assertEquals("service_job_id", req.service_job_id)
+        assertEquals("service_job_number", req.service_job_number)
         assertEquals("service_pull_request", req.service_pull_request)
+        assertEquals("service_branch", req.service_branch)
+        assertEquals("service_build_url", req.service_build_url)
         assertEquals(gitInfo, req.git)
         assertEquals(sourceFiles, req.source_files)
     }

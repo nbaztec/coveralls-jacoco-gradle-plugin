@@ -1,6 +1,15 @@
 package org.gradle.plugin.coveralls.jacoco
 
-data class ServiceInfo(val name: String, val repoName: String? = null, val number: String? = null, val jobId: String? = null, val pr: String? = null, val branch: String? = null)
+data class ServiceInfo(
+    val name: String,
+    val repoName: String? = null,
+    val number: String? = null,
+    val jobId: String? = null,
+    val jobNumber: String? = null,
+    val pr: String? = null,
+    val branch: String? = null,
+    val buildUrl: String? = null
+)
 
 class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isJenkins = envGetter("JENKINS_URL") != null
@@ -27,7 +36,8 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
             )
             isCircleCI -> ServiceInfo(
                     name = "circleci",
-                    jobId = envGetter("CIRCLE_BUILD_NUM"),
+                    number = envGetter("CIRCLE_WORKFLOW_ID"),
+                    jobNumber = envGetter("CIRCLE_BUILD_NUM"),
                     pr = envGetter("CIRCLE_PULL_REQUEST")?.substringAfterLast("/"),
                     branch = envGetter("CIRCLE_BRANCH")
             )
@@ -63,7 +73,8 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
                     number = envGetter("BUILDKITE_BUILD_NUMBER"),
                     jobId = envGetter("BUILDKITE_BUILD_ID"),
                     pr = if (envGetter("BUILDKITE_PULL_REQUEST") == "false")  null else envGetter("BUILDKITE_PULL_REQUEST"),
-                    branch = envGetter("BUILDKITE_BRANCH")
+                    branch = envGetter("BUILDKITE_BRANCH"),
+                    buildUrl = envGetter("BUILDKITE_BUILD_URL")
             )
             else -> ServiceInfo("other")
         }
