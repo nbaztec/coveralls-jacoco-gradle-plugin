@@ -17,7 +17,10 @@ data class Request(
     val repo_name: String?,
     val service_number: String?,
     val service_job_id: String?,
+    val service_job_number: String?,
     val service_pull_request: String?,
+    val service_branch: String?,
+    val service_build_url: String?,
     val git: GitInfo?,
     val source_files: List<SourceReport>
 )
@@ -51,14 +54,17 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         check(repoToken != null && repoToken.isNotBlank()) { "COVERALLS_REPO_TOKEN not set" }
 
         val req = Request(
-                repoToken,
-                serviceInfo.name,
-                serviceInfo.repoName,
-                serviceInfo.number,
-                serviceInfo.jobId,
-                serviceInfo.pr,
-                gitInfo,
-                sourceFiles
+                repo_token = repoToken,
+                repo_name = serviceInfo.repoName,
+                service_name = serviceInfo.name,
+                service_number = serviceInfo.number,
+                service_job_id = serviceInfo.jobId,
+                service_job_number = serviceInfo.jobNumber,
+                service_pull_request = serviceInfo.pr,
+                service_branch = serviceInfo.branch,
+                service_build_url = serviceInfo.buildUrl,
+                git = gitInfo,
+                source_files = sourceFiles
         )
 
         send(pluginExtension.apiEndpoint, req)
