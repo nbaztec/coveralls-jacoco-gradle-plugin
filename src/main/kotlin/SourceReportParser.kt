@@ -85,7 +85,11 @@ object SourceReportParser {
                         val lines = f.readLines()
                         val lineHits = arrayOfNulls<Int>(lines.size)
 
-                        cov.forEach { (line, hits) -> lineHits[line] = hits }
+                        cov.forEach { (line, hits) ->
+                            if (line < lineHits.size) {
+                                lineHits[line] = hits
+                            }
+                        }
 
                         val relPath = File(project.projectDir.absolutePath).toURI().relativize(f.toURI()).toString()
                         SourceReport(relPath, f.md5(), lineHits.toList())
