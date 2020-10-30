@@ -11,6 +11,7 @@ import java.io.File
 
 internal class SourceReportParserTest {
     private val testReport = File("src/test/resources/testreports/jacocoTestReport.xml")
+    private val testReportMissingLines = File("src/test/resources/testreports/jacocoTestReportMissingLines.xml")
     private val testKotlinStyleSourceDir = File("src/test/resources/testrepo/src/main/kotlin")
     private val testKotlinStyleSourceDirAdditional = File("src/test/resources/testrepo/src/anotherMain/kotlin")
     private val testJavaStyleSourceDir = File("src/test/resources/testrepo/javaStyleSrc/main/kotlin")
@@ -120,6 +121,39 @@ internal class SourceReportParserTest {
             every { projectDir } returns File("src/test/resources/testrepo")
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
                 every { reportPath } returns testReport.path
+                every { reportSourceSets } returns listOf(
+                        testKotlinStyleSourceDir,
+                        testKotlinStyleSourceDirAdditional
+                )
+            }
+        }
+
+        val actual = SourceReportParser.parse(project)
+        val expected = listOf(
+                SourceReport(
+                        "src/main/kotlin/Main.kt",
+                        "36083cd4c2ac736f9210fd3ed23504b5",
+                        listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)),
+                SourceReport(
+                        "src/main/kotlin/internal/Util.kt",
+                        "805ee340f4d661be591b4eb42f6164d2",
+                        listOf(null, null, null, null, 1, 1, 1, null, null)
+                ),
+                SourceReport(
+                        "src/anotherMain/kotlin/Lib.kt",
+                        "8b5c1c773cf81996efc19a08f0ac3648",
+                        listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
+                )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `SourceReportParser ignores lines in report that are missing in source`() {
+        val project = mockk<Project> {
+            every { projectDir } returns File("src/test/resources/testrepo")
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportPath } returns testReportMissingLines.path
                 every { reportSourceSets } returns listOf(
                         testKotlinStyleSourceDir,
                         testKotlinStyleSourceDirAdditional
