@@ -28,7 +28,7 @@ buildscript {
 
 plugins {
     jacoco
-    id("com.github.nbaztec.coveralls-jacoco")
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.4"
 }
 ```
 
@@ -62,7 +62,7 @@ jacocoTestReport {
 }
 ```
 
-## Multi-Project Support
+## Multi-Project Support - Pure Kotlin/Java
 To consolidate multiple JaCoCo coverage reports, the following code can be used to add a new task `codeCoverageReport`
 ```kotlin
 tasks.register<JacocoReport>("codeCoverageReport") {
@@ -96,6 +96,170 @@ tasks.register<JacocoReport>("codeCoverageReport") {
         // HTML reports can be used to see code coverage
         // without any external tools
         html.isEnabled = true
+    }
+}
+```
+
+## Multi-Project Support - Android
+
+To consolidate multiple JaCoCo coverage reports on Android multi-project configurations, the following code can be used to add a new task `jacocoFullReport`
+
+### Groovy DSL `build.gradle`
+```groovy
+// ignore any subproject, if required `subprojects.findAll{ it.name != 'customSubProject' }`
+def coveredProjects = subprojects
+
+// configure() method takes a list as an argument and applies the configuration to the projects in this list.
+configure(coveredProjects) { p ->
+    p.evaluate()
+
+    // Here we apply jacoco plugin to every project
+    apply plugin: 'jacoco'
+    // Set Jacoco version
+    jacoco {
+        toolVersion = "0.8.5"
+    }
+
+    // Here we create the task to generate Jacoco report
+    // It depends to unit test task we don't have to manually running unit test before the task
+    task jacocoReport(type: JacocoReport, dependsOn: 'test') {
+
+        // Define what type of report we should generate
+        // If we don't want to process the data further, html should be enough
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+
+        // Setup the .class, source, and execution directories
+        final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', 'android/**/*.*']
+
+        sourceDirectories.setFrom files(["${p.projectDir}/src/main/java"])
+        classDirectories.setFrom files([fileTree(dir: "${p.buildDir}/classes", excludes: fileFilter)])
+        executionData.setFrom fileTree(dir: p.buildDir, includes: [
+                'jacoco/*.exec', 'outputs/code-coverage/connected/*coverage.ec'
+        ])
+    }
+}
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.nbaztec.coveralls-jacoco'
+
+task jacocoFullReport(type: JacocoReport, group: 'Coverage reports') {
+    def projects = coveredProjects
+
+    // Here we depend on the jacocoReport task that we created before
+    dependsOn(projects.jacocoReport)
+
+    final source = files(projects.jacocoReport.sourceDirectories)
+
+    additionalSourceDirs.setFrom source
+    sourceDirectories.setFrom source
+
+    classDirectories.setFrom files(projects.jacocoReport.classDirectories)
+    executionData.setFrom files(projects.jacocoReport.executionData)
+
+    reports {
+        html {
+            enabled true
+            destination file("$buildDir/reports/jacoco/html")
+        }
+        xml {
+            enabled true
+            destination file("$buildDir/reports/jacoco/jacocoFullReport.xml")
+        }
+    }
+
+    doFirst {
+        executionData.setFrom files(executionData.findAll { it.exists() })
+    }
+
+    coverallsJacoco {
+        reportPath = "$buildDir/reports/jacoco/jacocoFullReport.xml"
+        reportSourceSets =  projects.jacocoReport.sourceDirectories.collect{ it.getFiles() }.flatten()
+    }
+}
+```
+
+### Kotlin DSL `build.gradle.kts`
+```kotlin
+
+// ignore any subproject, if required `subprojects.findAll{ it.name != 'customSubProject' }`
+val coveredProjects = subprojects
+
+// configure() method takes a list as an argument and applies the configuration to the projects in this list.
+configure(coveredProjects) {
+    val p = (this as org.gradle.api.internal.project.DefaultProject)
+    p.evaluate()
+
+    // Here we apply jacoco plugin to every project
+    apply(jacoco)
+
+    // Set Jacoco version
+    jacoco {
+        toolVersion = "0.8.5"
+    }
+
+    // Here we create the task to generate Jacoco report
+    // It depends to unit test task we don't have to manually running unit test before the task
+    p.task("jacocoReport", JacocoReport::class) {
+
+        // Define what type of report we should generate
+        // If we don't want to process the data further, html should be enough
+        reports {
+            xml.isEnabled = true
+            html.isEnabled = true
+        }
+
+        // Setup the .class, source, and execution directories
+        sourceDirectories.setFrom(files("${p.projectDir}/src/main/java"))
+        classDirectories.setFrom(fileTree("${p.buildDir}/classes") {
+            exclude("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*")
+        })
+        executionData.setFrom(fileTree(p.buildDir) {
+            include("jacoco/*.exec", "outputs/code-coverage/connected/*coverage.ec")
+        })
+    }.dependsOn("test")
+}
+
+plugins {
+    jacoco
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.4"
+}
+
+tasks {
+    register("jacocoFullReport", JacocoReport::class) {
+
+        group = "Coverage reports"
+        val projects = coveredProjects
+
+        // Here we depend on the jacocoReport task that we created before
+        val subTasks = projects.map { it.task<JacocoReport>("jacocoReport") }
+        dependsOn(subTasks)
+
+        val subSourceDirs = subTasks.map { files(it.sourceDirectories) }
+        additionalSourceDirs.setFrom(subSourceDirs)
+        sourceDirectories.setFrom(subSourceDirs)
+
+        classDirectories.setFrom(subTasks.map { files(it.classDirectories) })
+        executionData.setFrom(subTasks.map { files(it.executionData) })
+
+        reports {
+            html.isEnabled = true
+            html.destination = file("$buildDir/reports/jacoco/html")
+
+            xml.isEnabled = true
+            xml.destination = file("$buildDir/reports/jacoco/jacocoFullReport.xml")
+        }
+
+        doFirst {
+            executionData.setFrom(files(executionData.filter { it.exists() }))
+        }
+
+        coverallsJacoco {
+            reportPath = "$buildDir/reports/jacoco/jacocoFullReport.xml"
+            reportSourceSets = subSourceDirs.flatMap { it.files }
+        }
     }
 }
 ```
