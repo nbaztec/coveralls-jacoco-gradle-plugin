@@ -66,6 +66,8 @@ jacocoTestReport {
 To consolidate multiple JaCoCo coverage reports, the following code can be used to add a new task `codeCoverageReport`
 ```kotlin
 tasks.register<JacocoReport>("codeCoverageReport") {
+    val jacocoReportTask = this
+
     // If a subproject applies the 'jacoco' plugin, add the result it to the report
     subprojects {
         val subproject = this
@@ -97,6 +99,8 @@ tasks.register<JacocoReport>("codeCoverageReport") {
         // without any external tools
         html.isEnabled = true
     }
+
+    coverallsJacoco.dependsOn(jacocoReportTask)
 }
 ```
 
@@ -135,7 +139,11 @@ configure(coveredProjects) { p ->
         final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', 'android/**/*.*']
 
         sourceDirectories.setFrom files(["${p.projectDir}/src/main/java"])
-        classDirectories.setFrom files([fileTree(dir: "${p.buildDir}/classes", excludes: fileFilter)])
+        classDirectories.setFrom files([
+            fileTree(dir: "${p.buildDir}/classes", excludes: fileFilter),
+            fileTree(dir: "${p.buildDir}/intermediates/javac/debug", excludes: fileFilter),
+            fileTree(dir: "${p.buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter),
+        ])
         executionData.setFrom fileTree(dir: p.buildDir, includes: [
                 'jacoco/*.exec', 'outputs/code-coverage/connected/*coverage.ec'
         ])
@@ -178,6 +186,8 @@ task jacocoFullReport(type: JacocoReport, group: 'Coverage reports') {
         reportPath = "$buildDir/reports/jacoco/jacocoFullReport.xml"
         reportSourceSets =  projects.jacocoReport.sourceDirectories.collect{ it.getFiles() }.flatten()
     }
+
+    tasks.coverallsJacoco.dependsOn(it)
 }
 ```
 
@@ -212,10 +222,16 @@ configure(coveredProjects) {
         }
 
         // Setup the .class, source, and execution directories
+        val fileTreeConfig: (ConfigurableFileTree) -> Unit = {
+            it.exclude("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*")
+        }
+
         sourceDirectories.setFrom(files("${p.projectDir}/src/main/java"))
-        classDirectories.setFrom(fileTree("${p.buildDir}/classes") {
-            exclude("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*")
-        })
+        classDirectories.setFrom(listOf(
+            fileTree("${p.buildDir}/classes", fileTreeConfig),
+            fileTree("${p.buildDir}/intermediates/javac/debug", fileTreeConfig),
+            fileTree("${p.buildDir}/tmp/kotlin-classes/debug", fileTreeConfig)
+        ))
         executionData.setFrom(fileTree(p.buildDir) {
             include("jacoco/*.exec", "outputs/code-coverage/connected/*coverage.ec")
         })
@@ -229,6 +245,7 @@ plugins {
 
 tasks {
     register("jacocoFullReport", JacocoReport::class) {
+        val jacocoReportTask = this
 
         group = "Coverage reports"
         val projects = coveredProjects
@@ -257,6 +274,8 @@ tasks {
         }
 
         coverallsJacoco {
+            dependsOn(jacocoReportTask)
+
             reportPath = "$buildDir/reports/jacoco/jacocoFullReport.xml"
             reportSourceSets = subSourceDirs.flatMap { it.files }
         }
