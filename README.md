@@ -50,6 +50,8 @@ coverallsJacoco {
 }
 ```
 
+* `reportSourceSets: Iterable<File>` - a list of directories where to find the source code in.
+
 ## Excluding Files
 Please refer to the official JaCoCo documentation to exclude files from the report. An example configuration is as follows:
 ```
