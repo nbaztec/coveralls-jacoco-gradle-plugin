@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.2.4"
+version = "1.2.5"
 
 buildscript {
     repositories {
@@ -12,7 +12,10 @@ buildscript {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        languageVersion = "1.4"
+    }
 }
 
 java {

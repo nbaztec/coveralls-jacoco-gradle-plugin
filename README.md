@@ -39,6 +39,10 @@ $ ./gradlew test jacocoTestReport coverallsJacoco
 
 Set the value of `COVERALLS_REPO_TOKEN` from the project page on coveralls.io
 
+Additionally, the following coveralls parameters may be specified via environment variables:
+* `COVERALLS_PARALLEL` (`true`/`false`)
+* `COVERALLS_FLAG_NAME`
+
 ## Options
 ```kotlin
 // build.gradle.kts
