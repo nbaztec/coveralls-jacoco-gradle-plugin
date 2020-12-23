@@ -22,7 +22,9 @@ data class Request(
     val service_branch: String?,
     val service_build_url: String?,
     val git: GitInfo?,
-    val source_files: List<SourceReport>
+    val parallel: Boolean?,
+    val flag_name: String?,
+    val source_files: List<SourceReport>,
 )
 
 private fun Request.json() = Gson().toJson(this)
@@ -49,22 +51,22 @@ class CoverallsReporter(val envGetter: EnvGetter) {
 
         logger.info("retrieving ci service info")
         val serviceInfo = ServiceInfoParser(envGetter).parse()
-
-        val repoToken = envGetter("COVERALLS_REPO_TOKEN") ?: envGetter("GITHUB_TOKEN")
-        check(repoToken != null && repoToken.isNotBlank()) { "COVERALLS_REPO_TOKEN not set" }
+        val options = OptionsParser(envGetter).parse()
 
         val req = Request(
-                repo_token = repoToken,
-                repo_name = serviceInfo.repoName,
-                service_name = serviceInfo.name,
-                service_number = serviceInfo.number,
-                service_job_id = serviceInfo.jobId,
-                service_job_number = serviceInfo.jobNumber,
-                service_pull_request = serviceInfo.pr,
-                service_branch = serviceInfo.branch,
-                service_build_url = serviceInfo.buildUrl,
-                git = gitInfo,
-                source_files = sourceFiles
+            repo_token = options.repoToken,
+            repo_name = serviceInfo.repoName,
+            service_name = serviceInfo.name,
+            service_number = serviceInfo.number,
+            service_job_id = serviceInfo.jobId,
+            service_job_number = serviceInfo.jobNumber,
+            service_pull_request = serviceInfo.pr,
+            service_branch = serviceInfo.branch,
+            service_build_url = serviceInfo.buildUrl,
+            git = gitInfo,
+            parallel = options.parallel,
+            flag_name = options.flagName,
+            source_files = sourceFiles,
         )
 
         send(pluginExtension.apiEndpoint, req)
@@ -74,28 +76,32 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         val httpClient = HttpClients.createDefault()
         val httpPost = HttpPost(endpoint).apply {
             config = RequestConfig
-                    .custom()
-                    .setConnectTimeout(defaultHttpTimeoutMs)
-                    .setSocketTimeout(defaultHttpTimeoutMs)
-                    .setConnectionRequestTimeout(defaultHttpTimeoutMs)
-                    .build()
+                .custom()
+                .setConnectTimeout(defaultHttpTimeoutMs)
+                .setSocketTimeout(defaultHttpTimeoutMs)
+                .setConnectionRequestTimeout(defaultHttpTimeoutMs)
+                .build()
 
             entity = MultipartEntityBuilder
-                    .create()
-                    .addBinaryBody(
-                            "json_file",
-                            req.json().toByteArray(Charsets.UTF_8),
-                            ContentType.APPLICATION_JSON,
-                            "json_file"
-                    )
-                    .build()
+                .create()
+                .addBinaryBody(
+                    "json_file",
+                    req.json().toByteArray(Charsets.UTF_8),
+                    ContentType.APPLICATION_JSON,
+                    "json_file"
+                )
+                .build()
         }
 
         logger.info("sending payload to coveralls")
         logger.debug(req.json())
         val res = httpClient.execute(httpPost)
         if (res.statusLine.statusCode != 200) {
-            throw Exception("coveralls returned HTTP ${res.statusLine.statusCode}: ${EntityUtils.toString(res.entity).trim()}")
+            throw Exception(
+                "coveralls returned HTTP ${res.statusLine.statusCode}: ${
+                    EntityUtils.toString(res.entity).trim()
+                }"
+            )
         }
         logger.info("OK")
     }

@@ -52,17 +52,6 @@ internal class CoverallsReporterTest {
     }
 
     @Test
-    fun `CoverallsReporter throws exception when repo token not set`() {
-        val envGetter = createEnvGetter(mapOf())
-        val project = mockProject()
-
-        val reporter = CoverallsReporter(envGetter)
-        assertThrows<IllegalStateException> { reporter.report(project) }.also {
-            assertEquals("COVERALLS_REPO_TOKEN not set", it.message)
-        }
-    }
-
-    @Test
     fun `CoverallsReporter throws exception on coveralls server error`() = runBlocking {
         val mockServer = HttpServer.create(InetSocketAddress("localhost", 0), 0).apply {
             createContext("/") { http ->
