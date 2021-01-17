@@ -30,8 +30,9 @@ data class Request(
 private fun Request.json() = Gson().toJson(this)
 
 typealias EnvGetter = (String) -> String?
+typealias SourceFilesSanitiser = (List<SourceReport>) -> Void
 
-class CoverallsReporter(val envGetter: EnvGetter) {
+class CoverallsReporter(val envGetter: EnvGetter, val sourceFilesSanitiser: SourceFilesSanitiser? = null) {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
     private val defaultHttpTimeoutMs = 10 * 1000
 
@@ -43,6 +44,9 @@ class CoverallsReporter(val envGetter: EnvGetter) {
 
         logger.info("parsing source files")
         val sourceFiles = SourceReportParser.parse(project)
+        if (sourceFilesSanitiser != null) {
+            sourceFilesSanitiser.invoke(sourceFiles)
+        }
 
         if (sourceFiles.count() == 0) {
             logger.info("source file set empty, skipping")

@@ -11,7 +11,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 
 
-data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)
+data class SourceReport(var name: String, val source_digest: String, val coverage: List<Int?>)
 
 data class Key(val pkg: String, val file: String)
 
