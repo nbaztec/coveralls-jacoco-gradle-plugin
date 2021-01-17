@@ -191,6 +191,22 @@ internal class ServiceInfoParserTest {
     }
 
     @Test
+    fun `ServiceInfoParser parses gitlab env`() {
+        val envGetter = createEnvGetter(mapOf(
+                "GITLAB_CI" to "true",
+                "CI_PIPELINE_ID" to "12341234",
+                "CI_PIPELINE_URL" to "https://gitlab.com.com/your-group/your-repo/pipelines/123",
+                "CI_JOB_ID" to "43214321",
+                "CI_COMMIT_BRANCH" to "foobar",
+                "CI_MERGE_REQUEST_IID" to "11"
+        ))
+
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo(name = "gitlab-ci", number = "12341234", jobId = "43214321", pr = "11", branch = "foobar", buildUrl = "https://gitlab.com.com/your-group/your-repo/pipelines/123")
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun `ServiceInfoParser parses unidentifiable ci as other`() {
         val envGetter = createEnvGetter(emptyMap())
 
