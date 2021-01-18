@@ -19,6 +19,7 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isGithubActions = envGetter("GITHUB_ACTIONS") != null
     private val isGithubActionsToken = envGetter("GITHUB_TOKEN") != null
     private val isBuildkite = envGetter("BUILDKITE") == "true"
+    private val isGitlab = envGetter("GITLAB_CI") != null
 
     fun parse(): ServiceInfo {
         return when {
@@ -77,6 +78,15 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
                     branch = envGetter("BUILDKITE_BRANCH"),
                     buildUrl = envGetter("BUILDKITE_BUILD_URL")
             )
+            isGitlab -> ServiceInfo(
+                    name = "gitlab-ci",
+                    number = envGetter("CI_PIPELINE_ID"),
+                    jobId = envGetter("CI_JOB_ID"),
+                    pr = envGetter("CI_MERGE_REQUEST_IID"),
+                    branch = envGetter("CI_COMMIT_BRANCH"),
+                    buildUrl = envGetter("CI_PIPELINE_URL")
+            )
+
             else -> ServiceInfo("other")
         }
     }
