@@ -356,8 +356,8 @@ jobs:
 ```
 ### Buildkite
 
-See [buildkite environment variables documentation](https://buildkite.com/docs/pipelines/environment-variables#defining-your-own)
+See Buildkite environment variables [documentation](https://buildkite.com/docs/pipelines/environment-variables#defining-your-own)
 
 ### Gitlab CI
 
-See [Gitlab CI predefined variables documentation](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
+See Gitlab CI predefined variables [documentation](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
