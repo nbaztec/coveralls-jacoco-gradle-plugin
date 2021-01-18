@@ -22,7 +22,7 @@ internal class GitInfoParserTest {
                         "4cd72eadcc34861139b338dd859344d419244e0b",
                         "John Doe", "test@example.com",
                         "John Doe", "test@example.com",
-                        "test commit\n"
+                        "test commit"
                 ),
                 "master",
                 listOf(Remote("origin", "git@github.com:test/testrepo.git"))

@@ -48,5 +48,7 @@ internal class CoverallsJacocoPluginTest {
         assertEquals(extension.reportPath, "build/reports/jacoco/test/jacocoTestReport.xml")
         assertEquals(extension.reportSourceSets, emptySet<SourceSet>())
         assertEquals(extension.apiEndpoint, "https://coveralls.io/api/v1/jobs")
+        assertEquals(extension.dryRun, false)
+        assertEquals(extension.coverallsRequest, null)
     }
 }

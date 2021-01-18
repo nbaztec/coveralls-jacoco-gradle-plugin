@@ -42,7 +42,7 @@ object GitInfoParser {
                         commit.authorIdent.emailAddress,
                         commit.committerIdent.name,
                         commit.committerIdent.emailAddress,
-                        commit.fullMessage
+                        commit.fullMessage.trim(),
                 )
             }
 

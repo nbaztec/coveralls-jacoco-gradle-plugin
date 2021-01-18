@@ -49,12 +49,20 @@ Additionally, the following coveralls parameters may be specified via environmen
 
 coverallsJacoco {
     reportPath = "" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
-    reportSourceSets += sourceSets.foo.allJava.srcDirs + sourceSets.bar.allJava.srcDirs // optional, default: main
-    apiEndpoint = "" // optional, default: https://coveralls.io/api/v1/jobs 
+
+    reportSourceSets += sourceSets.foo.allJava.srcDirs + sourceSets.bar.allJava.srcDirs // default: main
+    apiEndpoint = "" // default: https://coveralls.io/api/v1/jobs 
+    
+    dryRun = false // default: false
+    coverallsRequest = File("build/req.json") // default: null
 }
 ```
 
+* `reportPath: String` - location of the jacoco xml report.
 * `reportSourceSets: Iterable<File>` - a list of directories where to find the source code in.
+* `apiEndpoint: String` - coveralls api endpoint for posting jobs.
+* `dryRun: Boolean` - executes the task without posting to coveralls. Useful for debugging.
+* `coverallsRequest: File` - writes the coveralls request payload to a file. Useful for debugging.
 
 ## Excluding Files
 Please refer to the official JaCoCo documentation to exclude files from the report. An example configuration is as follows:
