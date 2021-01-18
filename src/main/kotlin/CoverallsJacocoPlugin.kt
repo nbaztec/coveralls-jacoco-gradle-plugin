@@ -8,6 +8,8 @@ open class CoverallsJacocoPluginExtension {
     var reportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
     var apiEndpoint = "https://coveralls.io/api/v1/jobs"
     var reportSourceSets: Iterable<File> = emptySet()
+    var dryRun: Boolean = false
+    var coverallsRequest: File? = null
 }
 
 class CoverallsJacocoPlugin : Plugin<Project> {

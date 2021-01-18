@@ -10,6 +10,7 @@ import org.apache.http.util.EntityUtils
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.gradle.api.Project
+import java.nio.charset.Charset
 
 data class Request(
     val repo_token: String,
@@ -68,6 +69,13 @@ class CoverallsReporter(val envGetter: EnvGetter) {
             flag_name = options.flagName,
             source_files = sourceFiles,
         )
+
+        pluginExtension.coverallsRequest?.writeText(req.json(), Charsets.UTF_8)
+
+        if (pluginExtension.dryRun) {
+            logger.info("skip sending to coveralls in dry run")
+            return
+        }
 
         send(pluginExtension.apiEndpoint, req)
     }
