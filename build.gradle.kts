@@ -36,7 +36,9 @@ dependencies {
     implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.8.1.202007141445-r")
     implementation("org.apache.httpcomponents", "httpmime", "4.5.12")
     implementation("com.google.code.gson", "gson", "2.8.5")
-    implementation("com.android.tools.build", "gradle", "4.0.1")
+    //only use this to find android sourceSets, so only need it at compile time not a runtime dependency
+    compileOnly("com.android.tools.build", "gradle", "4.0.1")
+    testImplementation("com.android.tools.build", "gradle", "4.0.1")
     testImplementation("junit", "junit", "4.13")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.6.2")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.6.2")
