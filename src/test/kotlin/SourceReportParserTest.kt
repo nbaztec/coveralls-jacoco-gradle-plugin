@@ -3,6 +3,7 @@ package org.gradle.plugin.coveralls.jacoco
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -99,21 +100,23 @@ internal class SourceReportParserTest {
             }
         }
 
-        SourceReportParser.hasAndroidClasses = false
-        val actual = SourceReportParser.parse(project)
-        SourceReportParser.hasAndroidClasses = true
-        val expected = listOf(
-                SourceReport(
-                        "src/main/kotlin/Main.kt",
-                        "36083cd4c2ac736f9210fd3ed23504b5",
-                        listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)),
-                SourceReport(
-                        "src/main/kotlin/internal/Util.kt",
-                        "805ee340f4d661be591b4eb42f6164d2",
-                        listOf(null, null, null, null, 1, 1, 1, null, null)
-                )
-        )
-        assertEquals(expected, actual)
+        mockkObject(SourceReportParser, recordPrivateCalls = true) {
+            every { SourceReportParser getProperty "hasAndroid" } returns false
+
+            val actual = SourceReportParser.parse(project)
+            val expected = listOf(
+                    SourceReport(
+                            "src/main/kotlin/Main.kt",
+                            "36083cd4c2ac736f9210fd3ed23504b5",
+                            listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)),
+                    SourceReport(
+                            "src/main/kotlin/internal/Util.kt",
+                            "805ee340f4d661be591b4eb42f6164d2",
+                            listOf(null, null, null, null, 1, 1, 1, null, null)
+                    )
+            )
+            assertEquals(expected, actual)
+        }
     }
 
     @Test
