@@ -87,6 +87,36 @@ internal class SourceReportParserTest {
     }
 
     @Test
+    fun `SourceReportParser parses simple jacoco report without android classes`() {
+        val project = mockk<Project> {
+            every { projectDir } returns File("src/test/resources/testrepo")
+            every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
+                every { getByName("main").allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
+            }
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportPath } returns testReport.path
+                every { reportSourceSets } returns emptySet()
+            }
+        }
+
+        SourceReportParser.hasAndroidClasses = false
+        val actual = SourceReportParser.parse(project)
+        SourceReportParser.hasAndroidClasses = true
+        val expected = listOf(
+                SourceReport(
+                        "src/main/kotlin/Main.kt",
+                        "36083cd4c2ac736f9210fd3ed23504b5",
+                        listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)),
+                SourceReport(
+                        "src/main/kotlin/internal/Util.kt",
+                        "805ee340f4d661be591b4eb42f6164d2",
+                        listOf(null, null, null, null, 1, 1, 1, null, null)
+                )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun `SourceReportParser parses simple jacoco report with kotlin styled root package`() {
         val project = mockk<Project> {
             every { projectDir } returns File("src/test/resources/testrepo")

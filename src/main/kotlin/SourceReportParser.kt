@@ -17,6 +17,17 @@ data class Key(val pkg: String, val file: String)
 
 object SourceReportParser {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
+    var hasAndroidClasses: Boolean = false
+
+    init {
+        try {
+            //test to see if we have the required android classes, use this to guard the android source set lookup
+            Class.forName("com.android.build.gradle.internal.dsl.BaseAppModuleExtension")
+            hasAndroidClasses = true
+        } catch (e: NoClassDefFoundError) {
+            //failed, no android classes on classpath
+        }
+    }
 
     private fun read(reportPath: String): Map<Key, Map<Int, Int>> {
         val reader = SAXReader()
@@ -60,11 +71,18 @@ object SourceReportParser {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
-            val androidExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)
-            androidExtension?.let {
-                androidExtension.sourceSets.getByName("main").java.srcDirs.filterNotNull()
-            } ?: project.extensions.getByType(SourceSetContainer::class.java)
-                    .getByName("main").allJava.srcDirs.filterNotNull()
+            if (hasAndroidClasses) {
+                //if we have android classes on classpath, then attempt to load android sourcesets
+                val androidExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)
+                androidExtension?.let {
+                    androidExtension.sourceSets.getByName("main").java.srcDirs.filterNotNull()
+                } ?: project.extensions.getByType(SourceSetContainer::class.java)
+                        .getByName("main").allJava.srcDirs.filterNotNull()
+            } else {
+                //otherwise just use normal sourcesets
+                project.extensions.getByType(SourceSetContainer::class.java)
+                        .getByName("main").allJava.srcDirs.filterNotNull()
+            }
 
         } else {
             pluginExtension.reportSourceSets.toList()
