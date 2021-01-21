@@ -55,7 +55,7 @@ internal class CoverallsReporterTest {
         reporter.report(project)
 
         verifyAll(inverse = true) {
-            reporter["send"](any<String>(), any<Request>())
+            reporter["send"](any<String>(), any<String>())
         }
     }
 
@@ -133,7 +133,7 @@ internal class CoverallsReporterTest {
         reporter.report(project)
 
         verifyAll(inverse = true) {
-            reporter["send"](any<String>(), any<Request>())
+            reporter["send"](any<String>(), any<String>())
         }
 
         assertNotEquals(0, coverallsRequest.length())

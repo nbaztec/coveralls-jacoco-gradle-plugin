@@ -77,10 +77,10 @@ class CoverallsReporter(val envGetter: EnvGetter) {
             return
         }
 
-        send(pluginExtension.apiEndpoint, req)
+        send(pluginExtension.apiEndpoint, req.json())
     }
 
-    private fun send(endpoint: String, req: Request) {
+    fun send(endpoint: String, reqJson: String) {
         val httpClient = HttpClients.createDefault()
         val httpPost = HttpPost(endpoint).apply {
             config = RequestConfig
@@ -94,7 +94,7 @@ class CoverallsReporter(val envGetter: EnvGetter) {
                 .create()
                 .addBinaryBody(
                     "json_file",
-                    req.json().toByteArray(Charsets.UTF_8),
+                    reqJson.toByteArray(Charsets.UTF_8),
                     ContentType.APPLICATION_JSON,
                     "json_file"
                 )
@@ -102,7 +102,7 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         }
 
         logger.info("sending payload to coveralls")
-        logger.debug(req.json())
+        logger.debug(reqJson)
         val res = httpClient.execute(httpPost)
         if (res.statusLine.statusCode != 200) {
             throw Exception(
