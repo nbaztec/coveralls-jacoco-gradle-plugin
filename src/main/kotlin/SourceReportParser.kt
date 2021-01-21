@@ -17,6 +17,15 @@ data class Key(val pkg: String, val file: String)
 
 object SourceReportParser {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
+    //test to see if we have the required android classes, use this to guard the android source set lookup
+    private val hasAndroid by lazy {
+        try {
+            Class.forName("com.android.build.gradle.internal.dsl.BaseAppModuleExtension")
+            true
+        } catch (e: NoClassDefFoundError) {
+            false
+        }
+    }
 
     private fun read(reportPath: String): Map<Key, Map<Int, Int>> {
         val reader = SAXReader()
@@ -60,11 +69,16 @@ object SourceReportParser {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
-            val androidExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)
-            androidExtension?.let {
-                androidExtension.sourceSets.getByName("main").java.srcDirs.filterNotNull()
-            } ?: project.extensions.getByType(SourceSetContainer::class.java)
-                    .getByName("main").allJava.srcDirs.filterNotNull()
+            if (hasAndroid) {
+                val androidExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)
+                androidExtension?.let {
+                    androidExtension.sourceSets.getByName("main").java.srcDirs.filterNotNull()
+                } ?: project.extensions.getByType(SourceSetContainer::class.java)
+                        .getByName("main").allJava.srcDirs.filterNotNull()
+            } else {
+                project.extensions.getByType(SourceSetContainer::class.java)
+                        .getByName("main").allJava.srcDirs.filterNotNull()
+            }
 
         } else {
             pluginExtension.reportSourceSets.toList()
