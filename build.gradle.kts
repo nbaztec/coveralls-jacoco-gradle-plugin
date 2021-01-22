@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.2.7"
+version = "1.2.9"
 
 buildscript {
     repositories {

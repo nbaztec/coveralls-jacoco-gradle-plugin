@@ -22,7 +22,7 @@ object SourceReportParser {
         try {
             Class.forName("com.android.build.gradle.internal.dsl.BaseAppModuleExtension")
             true
-        } catch (e: NoClassDefFoundError) {
+        } catch (e: ClassNotFoundException) {
             false
         }
     }
