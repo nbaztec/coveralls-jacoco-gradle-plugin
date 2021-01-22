@@ -12,15 +12,13 @@ The plugin automatically detects the root package, if it conforms to Kotlin guid
 
 [Gradle Plugin page](https://plugins.gradle.org/plugin/com.github.nbaztec.coveralls-jacoco)
 
-Add the `google()` repository. The plugin relies on it to detect android projects.
-Apply the plugin with the ID: `com.github.nbaztec.coveralls-jacoco`.
+Apply the plugin with the ID: `com.github.nbaztec.coveralls-jacoco`. 
 
 ```kotlin
 // build.gradle.kts
 
 buildscript {
     repositories {
-        google()
         mavenCentral()
         jcenter()
     }
@@ -28,7 +26,7 @@ buildscript {
 
 plugins {
     jacoco
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.8"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.7"
 }
 ```
 
