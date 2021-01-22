@@ -28,7 +28,7 @@ buildscript {
 
 plugins {
     jacoco
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.7"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.8"
 }
 ```
 
