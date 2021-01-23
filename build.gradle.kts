@@ -31,6 +31,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.4.2")
+    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.4.21")
     implementation("org.dom4j", "dom4j", "2.1.3")
     implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.4.21")
     implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.10.0.202012080955-r")
