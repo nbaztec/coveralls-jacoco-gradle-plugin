@@ -92,6 +92,7 @@ tasks {
             xml.isEnabled = true
             html.isEnabled = true
         }
+        executionData(testAndroid)
     }
 
     create("setupPublishSecrets") {
