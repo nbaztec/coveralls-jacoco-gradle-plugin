@@ -92,7 +92,7 @@ tasks {
             xml.isEnabled = true
             html.isEnabled = true
         }
-        executionData(testAndroid)
+        executionData(File(buildDir, "jacoco/testAndroid.exec"))
     }
 
     create("setupPublishSecrets") {
