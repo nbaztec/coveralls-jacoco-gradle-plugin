@@ -29,27 +29,65 @@ repositories {
     jcenter()
 }
 
+val testAndroidMain: SourceSet by sourceSets.creating {
+    java {
+        srcDir("src/testAndroid/kotlin")
+        resources.srcDir("src/test/resources")
+    }
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+
+configurations {
+    val testAndroidMainImplementation: Configuration by getting {
+        extendsFrom(testImplementation.get())
+
+        dependencies {
+            testImplementation("com.android.tools.build", "gradle", "4.0.1")
+        }
+    }
+
+    val testAndroidMainRuntimeOnly: Configuration by getting {
+        extendsFrom(testRuntimeOnly.get())
+    }
+}
+
 dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.3.8")
-    implementation("org.dom4j", "dom4j", "2.1.0")
-    implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.3.72")
-    implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.8.1.202007141445-r")
-    implementation("org.apache.httpcomponents", "httpmime", "4.5.12")
-    implementation("com.google.code.gson", "gson", "2.8.5")
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.4.2")
+    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.4.21")
+    implementation("org.dom4j", "dom4j", "2.1.3")
+    implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.4.21")
+    implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.10.0.202012080955-r")
+    implementation("org.apache.httpcomponents", "httpmime", "4.5.13")
+    implementation("com.google.code.gson", "gson", "2.8.6")
     compileOnly("com.android.tools.build", "gradle", "4.0.1")
-    testImplementation("com.android.tools.build", "gradle", "4.0.1")
-    testImplementation("junit", "junit", "4.13")
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.6.2")
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.6.2")
-    testImplementation("io.mockk", "mockk", "1.10.0")
+
+    testImplementation("junit", "junit", "4.13.1")
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
+    testImplementation("io.mockk", "mockk", "1.10.5")
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
 }
 
 tasks {
     test {
         useJUnitPlatform()
     }
+
+    val testAndroid by registering(Test::class) {
+        useJUnitPlatform()
+        description = "Runs android tests."
+        group = "verification"
+        testClassesDirs = testAndroidMain.output.classesDirs
+        classpath = testAndroidMain.runtimeClasspath
+        shouldRunAfter(test)
+    }
+
+    check {
+        dependsOn(testAndroid)
+    }
+
     jacocoTestReport {
-        dependsOn(test)
+        dependsOn(test, testAndroid)
         reports {
             xml.isEnabled = true
             html.isEnabled = true
@@ -71,12 +109,13 @@ tasks {
 }
 
 plugins {
+    idea
     jacoco
     `java-gradle-plugin`
     `maven-publish`
-    id("org.jetbrains.kotlin.jvm") version "1.3.72"
+    id("org.jetbrains.kotlin.jvm") version "1.4.21"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.6"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.8"
 }
 
 publishing {
@@ -105,6 +144,14 @@ pluginBundle {
             description = "Send jacoco coverage data to coveralls.io"
             tags = listOf("coverage", "coveralls")
             displayName = "Coveralls Jacoco Plugin"
+        }
+    }
+}
+
+idea {
+    module {
+        testSourceDirs = testSourceDirs.apply {
+            addAll(testAndroidMain.allJava.srcDirs)
         }
     }
 }
