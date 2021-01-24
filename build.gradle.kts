@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.2.9"
+version = "1.2.10"
 
 buildscript {
     repositories {
@@ -49,7 +49,7 @@ val testAndroidMainRuntimeOnly: Configuration by configurations.getting {
 dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.4.2")
     implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.4.21")
-    implementation("org.dom4j", "dom4j", "2.1.3")
+    implementation("org.dom4j", "dom4j", "2.1.1")
     implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.4.21")
     implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.10.0.202012080955-r")
     implementation("org.apache.httpcomponents", "httpmime", "4.5.13")
