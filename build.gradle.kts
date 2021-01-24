@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.2.8"
+version = "1.2.9"
 
 buildscript {
     repositories {
@@ -29,6 +29,23 @@ repositories {
     jcenter()
 }
 
+val testAndroidMain: SourceSet by sourceSets.creating {
+    java {
+        srcDir("src/testAndroid/kotlin")
+        resources.srcDir("src/test/resources")
+    }
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+
+val testAndroidMainImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+val testAndroidMainRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.runtimeOnly.get())
+}
+
 dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.4.2")
     implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.4.21")
@@ -37,23 +54,45 @@ dependencies {
     implementation("org.eclipse.jgit", "org.eclipse.jgit", "5.10.0.202012080955-r")
     implementation("org.apache.httpcomponents", "httpmime", "4.5.13")
     implementation("com.google.code.gson", "gson", "2.8.6")
-    implementation("com.android.tools.build", "gradle", "4.0.1")
+    compileOnly("com.android.tools.build", "gradle", "4.0.1")
+
     testImplementation("junit", "junit", "4.13.1")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
     testImplementation("io.mockk", "mockk", "1.10.5")
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
+
+    testAndroidMainImplementation("com.android.tools.build", "gradle", "4.0.1")
+    testAndroidMainImplementation("junit", "junit", "4.13.1")
+    testAndroidMainImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
+    testAndroidMainImplementation("io.mockk", "mockk", "1.10.5")
+    testAndroidMainRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
 }
 
 tasks {
     test {
         useJUnitPlatform()
     }
+
+    val testAndroid by registering(Test::class) {
+        useJUnitPlatform()
+        description = "Runs android source set tests."
+        group = "verification"
+        testClassesDirs = testAndroidMain.output.classesDirs
+        classpath = testAndroidMain.runtimeClasspath
+        shouldRunAfter(test)
+    }
+
+    check {
+        dependsOn(testAndroid)
+    }
+
     jacocoTestReport {
-        dependsOn(test)
+        dependsOn(test, testAndroid)
         reports {
             xml.isEnabled = true
             html.isEnabled = true
         }
+        executionData(File(buildDir, "jacoco/testAndroid.exec"))
     }
 
     create("setupPublishSecrets") {
@@ -71,6 +110,7 @@ tasks {
 }
 
 plugins {
+    idea
     jacoco
     `java-gradle-plugin`
     `maven-publish`
@@ -105,6 +145,14 @@ pluginBundle {
             description = "Send jacoco coverage data to coveralls.io"
             tags = listOf("coverage", "coveralls")
             displayName = "Coveralls Jacoco Plugin"
+        }
+    }
+}
+
+idea {
+    module {
+        testSourceDirs = testSourceDirs.apply {
+            addAll(testAndroidMain.allJava.srcDirs)
         }
     }
 }

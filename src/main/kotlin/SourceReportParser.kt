@@ -10,13 +10,22 @@ import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
 
-
 data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)
 
 data class Key(val pkg: String, val file: String)
 
 object SourceReportParser {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
+
+    //test to see if we have the required android classes, use this to guard the android source set lookup
+    private val hasAndroidExtension by lazy {
+        try {
+            Class.forName("com.android.build.gradle.internal.dsl.BaseAppModuleExtension")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        }
+    }
 
     private fun read(reportPath: String): Map<Key, Map<Int, Int>> {
         val reader = SAXReader()
@@ -60,12 +69,13 @@ object SourceReportParser {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
-            val androidExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)
-            androidExtension?.let {
-                androidExtension.sourceSets.getByName("main").java.srcDirs.filterNotNull()
-            } ?: project.extensions.getByType(SourceSetContainer::class.java)
+            if (hasAndroidExtension) {
+                project.extensions.findByType(BaseAppModuleExtension::class.java)!!.sourceSets
+                    .getByName("main").java.srcDirs.filterNotNull()
+            } else {
+                project.extensions.getByType(SourceSetContainer::class.java)
                     .getByName("main").allJava.srcDirs.filterNotNull()
-
+            }
         } else {
             pluginExtension.reportSourceSets.toList()
         }
@@ -78,27 +88,27 @@ object SourceReportParser {
 
         logger.info("using source directories: $sourceDirs")
         return read(pluginExtension.reportPath)
-                .mapNotNull { (key, cov) ->
-                    fileFinder.find(File(key.pkg, key.file))?.let { f ->
-                        logger.debug("found file: $f")
+            .mapNotNull { (key, cov) ->
+                fileFinder.find(File(key.pkg, key.file))?.let { f ->
+                    logger.debug("found file: $f")
 
-                        val lines = f.readLines()
-                        val lineHits = arrayOfNulls<Int>(lines.size)
+                    val lines = f.readLines()
+                    val lineHits = arrayOfNulls<Int>(lines.size)
 
-                        cov.forEach { (line, hits) ->
-                            if (line < lines.size) {
-                                lineHits[line] = hits
-                            } else {
-                                logger.debug("skipping invalid line $line, (total ${lines.size})")
-                            }
+                    cov.forEach { (line, hits) ->
+                        if (line < lines.size) {
+                            lineHits[line] = hits
+                        } else {
+                            logger.debug("skipping invalid line $line, (total ${lines.size})")
                         }
-
-                        val relPath = File(project.projectDir.absolutePath).toURI().relativize(f.toURI()).toString()
-                        SourceReport(relPath, f.md5(), lineHits.toList())
-                    }.also {
-                        it
-                                ?: logger.info("${key.file} could not be found in any of the source directories, skipping")
                     }
+
+                    val relPath = File(project.projectDir.absolutePath).toURI().relativize(f.toURI()).toString()
+                    SourceReport(relPath, f.md5(), lineHits.toList())
+                }.also {
+                    it
+                        ?: logger.info("${key.file} could not be found in any of the source directories, skipping")
                 }
+            }
     }
 }
