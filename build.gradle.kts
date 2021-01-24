@@ -38,18 +38,12 @@ val testAndroidMain: SourceSet by sourceSets.creating {
     runtimeClasspath += sourceSets.main.get().output
 }
 
-configurations {
-    val testAndroidMainImplementation: Configuration by getting {
-        extendsFrom(testImplementation.get())
+val testAndroidMainImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
 
-        dependencies {
-            testImplementation("com.android.tools.build", "gradle", "4.0.1")
-        }
-    }
-
-    val testAndroidMainRuntimeOnly: Configuration by getting {
-        extendsFrom(testRuntimeOnly.get())
-    }
+val testAndroidMainRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.runtimeOnly.get())
 }
 
 dependencies {
@@ -66,6 +60,12 @@ dependencies {
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
     testImplementation("io.mockk", "mockk", "1.10.5")
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
+
+    testAndroidMainImplementation("com.android.tools.build", "gradle", "4.0.1")
+    testAndroidMainImplementation("junit", "junit", "4.13.1")
+    testAndroidMainImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.0")
+    testAndroidMainImplementation("io.mockk", "mockk", "1.10.5")
+    testAndroidMainRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
 }
 
 tasks {
@@ -75,7 +75,7 @@ tasks {
 
     val testAndroid by registering(Test::class) {
         useJUnitPlatform()
-        description = "Runs android tests."
+        description = "Runs android source set tests."
         group = "verification"
         testClassesDirs = testAndroidMain.output.classesDirs
         classpath = testAndroidMain.runtimeClasspath
