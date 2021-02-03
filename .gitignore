@@ -1,5 +1,5 @@
 # gradle build dir
-build/*
+build
 
 # gradle local dir
 .gradle
