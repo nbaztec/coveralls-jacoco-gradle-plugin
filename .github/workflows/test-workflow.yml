@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
     - name: test and publish coverage
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -116,7 +116,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.4.21"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.10"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.11"
 }
 
 publishing {
