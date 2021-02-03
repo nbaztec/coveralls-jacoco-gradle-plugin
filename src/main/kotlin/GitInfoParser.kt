@@ -34,9 +34,13 @@ object GitInfoParser {
             val repo = RepositoryBuilder().findGitDir(directory).build()
             val head = repo.let {
                 val rev = repo.resolve("HEAD")
+
                 val commit = RevWalk(repo).parseCommit(rev)
 
                 println("commit message: ${commit.fullMessage.trim()}")
+                println(rev.name)
+                println(commit.name)
+                println(commit.shortMessage)
 
                 Head(
                         rev.name,
