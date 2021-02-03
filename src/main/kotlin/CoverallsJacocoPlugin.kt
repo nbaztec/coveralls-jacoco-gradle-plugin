@@ -26,3 +26,7 @@ class CoverallsJacocoPlugin : Plugin<Project> {
         }
     }
 }
+
+class Main {
+
+}

@@ -36,7 +36,7 @@ object GitInfoParser {
                 val rev = repo.resolve("HEAD")
                 val commit = RevWalk(repo).parseCommit(rev)
 
-                logger.debug("commit message: ${commit.fullMessage.trim()}")
+                println("commit message: ${commit.fullMessage.trim()}")
 
                 Head(
                         rev.name,

@@ -1,13 +1,23 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.nbaztec"
-version = "1.2.11"
+version = "1.2.12-DEBUG"
 
 buildscript {
     repositories {
         google()
         mavenCentral()
         jcenter()
+    }
+    dependencies {
+//        classpath(files("/Users/nisheeth/.m2/repository/com/github/nbaztec/coveralls-jacoco-gradle-plugin/1.2.12-DEBUG/coveralls-jacoco-gradle-plugin-1.2.12-DEBUG.jar"))
+        classpath(files("coveralls-jacoco-gradle-plugin-1.2.12-DEBUG.jar"))
+        classpath("org.eclipse.jgit", "org.eclipse.jgit", "5.10.0.202012080955-r")
+        classpath("org.dom4j", "dom4j", "2.1.1")
+        classpath("org.jetbrains.kotlin", "kotlin-gradle-plugin", "1.4.21")
+        classpath("org.eclipse.jgit", "org.eclipse.jgit", "5.10.0.202012080955-r")
+        classpath("org.apache.httpcomponents", "httpmime", "4.5.13")
+        classpath("com.google.code.gson", "gson", "2.8.6")
     }
 }
 
@@ -73,6 +83,12 @@ tasks {
         useJUnitPlatform()
     }
 
+//    jar {
+//        from(sourceSets.main.get().output.classesDirs, sourceSets.main.get().compileClasspath)
+//
+////        with(jar.get() as CopySpec)
+//    }
+
     val testAndroid by registering(Test::class) {
         useJUnitPlatform()
         description = "Runs android source set tests."
@@ -116,8 +132,10 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.4.21"
     id("com.gradle.plugin-publish") version "0.12.0"
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.10"
+//    id("com.github.nbaztec.coveralls-jacoco") version "1.2.12-DEBUG"
 }
+
+apply(plugin = "com.github.nbaztec.coveralls-jacoco")
 
 publishing {
     publications {
