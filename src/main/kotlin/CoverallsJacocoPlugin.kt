@@ -17,6 +17,8 @@ class CoverallsJacocoPlugin : Plugin<Project> {
         project.extensions.create("coverallsJacoco", CoverallsJacocoPluginExtension::class.java)
 
         project.task("coverallsJacoco") {
+            it.group = "verification"
+            it.description = "Reports coverage to coveralls"
             it.doLast {
                 val envGetter = { v: String -> System.getenv(v)?.ifBlank { null } }
                 CoverallsReporter(envGetter).report(project)
