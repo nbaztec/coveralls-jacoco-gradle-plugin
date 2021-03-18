@@ -20,6 +20,7 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
     private val isGithubActionsToken = envGetter("GITHUB_TOKEN") != null
     private val isBuildkite = envGetter("BUILDKITE") == "true"
     private val isGitlab = envGetter("GITLAB_CI") != null
+    private val isBitrise = envGetter("BITRISE_IO") == "true"
 
     fun parse(): ServiceInfo {
         return when {
@@ -86,7 +87,13 @@ class ServiceInfoParser(val envGetter: EnvGetter) {
                     branch = envGetter("CI_COMMIT_BRANCH"),
                     buildUrl = envGetter("CI_PIPELINE_URL")
             )
-
+            isBitrise -> ServiceInfo(
+                name = "bitrise",
+                number = envGetter("BITRISE_BUILD_NUMBER"),
+                pr = envGetter("BITRISE_PULL_REQUEST"),
+                branch = envGetter("BITRISE_GIT_BRANCH"),
+                buildUrl = envGetter("BITRISE_BUILD_URL")
+            )
             else -> ServiceInfo("other")
         }
     }

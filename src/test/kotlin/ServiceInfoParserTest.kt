@@ -195,14 +195,34 @@ internal class ServiceInfoParserTest {
         val envGetter = createEnvGetter(mapOf(
                 "GITLAB_CI" to "true",
                 "CI_PIPELINE_ID" to "12341234",
-                "CI_PIPELINE_URL" to "https://gitlab.com.com/your-group/your-repo/pipelines/123",
+                "CI_PIPELINE_URL" to "https://gitlab.com/your-group/your-repo/pipelines/123",
                 "CI_JOB_ID" to "43214321",
                 "CI_COMMIT_BRANCH" to "foobar",
                 "CI_MERGE_REQUEST_IID" to "11"
         ))
 
         val actual = ServiceInfoParser(envGetter).parse()
-        val expected = ServiceInfo(name = "gitlab-ci", number = "12341234", jobId = "43214321", pr = "11", branch = "foobar", buildUrl = "https://gitlab.com.com/your-group/your-repo/pipelines/123")
+        val expected = ServiceInfo(name = "gitlab-ci", number = "12341234", jobId = "43214321", pr = "11", branch = "foobar", buildUrl = "https://gitlab.com/your-group/your-repo/pipelines/123")
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `ServiceInfoParser parses bitrise env`() {
+        val envGetter = createEnvGetter(mapOf(
+            "BITRISE_IO" to "true",
+            "BITRISE_BUILD_NUMBER" to "123123",
+            "BITRISE_PULL_REQUEST" to "11",
+            "BITRISE_GIT_BRANCH" to "foobar",
+            "BITRISE_BUILD_URL" to "https://app.bitrise.io/build/d75abbebxfc9ca4e"
+        ))
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo(
+            name = "bitrise",
+            number = "123123",
+            pr = "11",
+            branch = "foobar",
+            buildUrl = "https://app.bitrise.io/build/d75abbebxfc9ca4e"
+        )
         assertEquals(expected, actual)
     }
 

@@ -305,6 +305,7 @@ The plugin can be used with the following CI providers:
 * Codeship
 * Buildkite
 * Gitlab CI
+* Bitrise
 
 
 ### Travis
@@ -363,3 +364,7 @@ See Buildkite environment variables [documentation](https://buildkite.com/docs/p
 ### Gitlab CI
 
 See Gitlab CI predefined variables [documentation](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
+
+### Bitrise CI
+
+See Bitrise CI predefined variables [documentation](https://devcenter.bitrise.io/builds/available-environment-variables/)
