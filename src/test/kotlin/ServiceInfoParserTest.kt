@@ -227,11 +227,51 @@ internal class ServiceInfoParserTest {
     }
 
     @Test
-    fun `ServiceInfoParser parses unidentifiable ci as other`() {
+    fun `ServiceInfoParser parses unidentifiable ci as other when no env is set`() {
         val envGetter = createEnvGetter(emptyMap())
 
         val actual = ServiceInfoParser(envGetter).parse()
         val expected = ServiceInfo("other")
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `ServiceInfoParser parses unidentifiable ci with default env on master`() {
+        val envGetter = createEnvGetter(mapOf(
+            "CI_NAME" to "teamcity",
+            "CI_BUILD_NUMBER" to "123123",
+            "CI_BUILD_URL" to "https://localhost:8111/viewLog.html?buildId=123123",
+            "CI_BRANCH" to "master",
+        ))
+
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo(
+            name = "teamcity",
+            number = "123123",
+            buildUrl = "https://localhost:8111/viewLog.html?buildId=123123",
+            branch = "master",
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `ServiceInfoParser parses unidentifiable ci with default env on pr`() {
+        val envGetter = createEnvGetter(mapOf(
+            "CI_NAME" to "teamcity",
+            "CI_BUILD_NUMBER" to "123123",
+            "CI_BUILD_URL" to "https://localhost:8111/viewLog.html?buildId=123123",
+            "CI_BRANCH" to "foobar",
+            "CI_PULL_REQUEST" to "11",
+        ))
+
+        val actual = ServiceInfoParser(envGetter).parse()
+        val expected = ServiceInfo(
+            name = "teamcity",
+            number = "123123",
+            buildUrl = "https://localhost:8111/viewLog.html?buildId=123123",
+            branch = "foobar",
+            pr = "11"
+        )
         assertEquals(expected, actual)
     }
 
