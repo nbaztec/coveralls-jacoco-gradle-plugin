@@ -40,7 +40,7 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
         logger.info("retrieving git info")
-        val gitInfo = GitInfoParser.parse(project.projectDir)
+        val gitInfo = GitInfoParser.parse(project.rootDir)
 
         logger.info("parsing source files")
         val sourceFiles = SourceReportParser.parse(project)

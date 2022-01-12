@@ -18,7 +18,7 @@ internal class SourceReportParserTest {
     @Test
     fun `SourceReportParser parses simple jacoco report with android classes`() {
         val project = mockk<Project> {
-            every { projectDir } returns File("src/test/resources/testrepo")
+            every { rootDir } returns File("src/test/resources/testrepo")
             every { extensions.findByType(BaseAppModuleExtension::class.java) } returns mockk {
                 every { sourceSets.getByName("main").java.srcDirs } returns setOf(testKotlinStyleSourceDir)
             }

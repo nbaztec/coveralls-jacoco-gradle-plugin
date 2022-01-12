@@ -103,7 +103,7 @@ object SourceReportParser {
                         }
                     }
 
-                    val relPath = File(project.projectDir.absolutePath).toURI().relativize(f.toURI()).toString()
+                    val relPath = File(project.rootDir.absolutePath).toURI().relativize(f.toURI()).toString()
                     SourceReport(relPath, f.md5(), lineHits.toList())
                 }.also {
                     it
