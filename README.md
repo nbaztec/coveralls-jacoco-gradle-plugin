@@ -26,7 +26,7 @@ buildscript {
 
 plugins {
     jacoco
-    id("com.github.nbaztec.coveralls-jacoco") version "1.2.11"
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.14"
 }
 ```
 
@@ -368,3 +368,15 @@ See Gitlab CI predefined variables [documentation](https://docs.gitlab.com/ee/ci
 ### Bitrise CI
 
 See Bitrise CI predefined variables [documentation](https://devcenter.bitrise.io/builds/available-environment-variables/)
+
+### Other CI
+
+For [other CIs](https://docs.coveralls.io/supported-ci-services#insert-your-ci-here), the following default environment variables are supported:
+
+```
+CI_NAME
+CI_BUILD_NUMBER
+CI_BUILD_URL
+CI_BRANCH
+CI_PULL_REQUEST
+```
