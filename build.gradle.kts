@@ -112,7 +112,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version Versions.kotlin
     id("com.gradle.plugin-publish") version Versions.gradlePublishPlugin
-    id("com.github.nbaztec.coveralls-jacoco") version Versions.gradleCoverallsJacocoPlugin
+    id("com.github.nbaztec.coveralls-jacoco") version 1.2.14
 }
 
 publishing {
