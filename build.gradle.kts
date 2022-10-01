@@ -110,7 +110,7 @@ plugins {
     jacoco
     `java-gradle-plugin`
     `maven-publish`
-    id("org.jetbrains.kotlin.jvm") version Versions.kotlin
+    id("org.jetbrains.kotlin.jvm") version 1.7.20
     id("com.gradle.plugin-publish") version Versions.gradlePublishPlugin
     id("com.github.nbaztec.coveralls-jacoco") version Versions.gradleCoverallsJacocoPlugin
 }
