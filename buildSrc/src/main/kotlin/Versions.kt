@@ -13,5 +13,5 @@ object Versions {
     const val mockk = "1.10.5"
 
     const val gradlePublishPlugin = "0.12.0"
-    const val gradleCoverallsJacocoPlugin = "1.2.14"
+    const val gradleCoverallsJacocoPlugin = "1.2.15"
 }
