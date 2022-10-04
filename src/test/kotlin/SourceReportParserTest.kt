@@ -19,6 +19,7 @@ internal class SourceReportParserTest {
     fun `SourceReportParser parses skips parsing if source directories empty`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
                 every { getByName("main").allJava.srcDirs } returns emptySet()
             }
@@ -36,6 +37,7 @@ internal class SourceReportParserTest {
     fun `SourceReportParser parses simple jacoco report with java styled package`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
                 every { getByName("main").allJava.srcDirs } returns setOf(testJavaStyleSourceDir)
             }
@@ -60,6 +62,7 @@ internal class SourceReportParserTest {
     fun `SourceReportParser parses simple android jacoco report with kotlin styled root package`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
                 every { getByName("main").allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
             }
@@ -89,6 +92,7 @@ internal class SourceReportParserTest {
     fun `SourceReportParser parses simple jacoco report without android classes`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
                 every { getByName("main").allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
             }
@@ -118,6 +122,7 @@ internal class SourceReportParserTest {
     fun `SourceReportParser parses simple jacoco report with kotlin styled root package`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns mockk {
                 every { getByName("main").allJava.srcDirs } returns setOf(testKotlinStyleSourceDir)
             }
@@ -147,6 +152,7 @@ internal class SourceReportParserTest {
     fun `SourceReportParser uses report source sets and parses jacoco report`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
                 every { reportPath } returns testReport.path
                 every { reportSourceSets } returns listOf(
@@ -178,9 +184,45 @@ internal class SourceReportParserTest {
     }
 
     @Test
+    fun `SourceReportParser uses jacocoAggregation provided source sets and parses jacoco report`() {
+        val project = mockk<Project> {
+            every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName("allCodeCoverageReportSourceDirectories") } returns mockk {
+                every { files } returns setOf( testKotlinStyleSourceDir,
+                    testKotlinStyleSourceDirAdditional)
+            }
+            every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
+                every { reportPath } returns testReport.path
+                every { reportSourceSets } returns emptySet()
+            }
+        }
+
+        val actual = SourceReportParser.parse(project)
+        val expected = listOf(
+            SourceReport(
+                "src/main/kotlin/Main.kt",
+                "36083cd4c2ac736f9210fd3ed23504b5",
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+            ),
+            SourceReport(
+                "src/main/kotlin/internal/Util.kt",
+                "805ee340f4d661be591b4eb42f6164d2",
+                listOf(null, null, null, null, 1, 1, 1, null, null)
+            ),
+            SourceReport(
+                "src/anotherMain/kotlin/Lib.kt",
+                "8b5c1c773cf81996efc19a08f0ac3648",
+                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun `SourceReportParser ignores lines in report that are missing in source`() {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
                 every { reportPath } returns testReportMissingLines.path
                 every { reportSourceSets } returns listOf(

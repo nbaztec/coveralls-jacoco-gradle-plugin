@@ -68,14 +68,15 @@ object SourceReportParser {
     fun parse(project: Project): List<SourceReport> {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
+        // if sources are not specified, then lookup android source sets, or if jacocoAggregate plugin is present,
+        // else fallback to main source set
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
             if (hasAndroidExtension) {
                 project.extensions.findByType(BaseAppModuleExtension::class.java)!!.sourceSets
                     .getByName("main").java.srcDirs.filterNotNull()
-            } else {
-                project.extensions.getByType(SourceSetContainer::class.java)
+            } else project.configurations.findByName("allCodeCoverageReportSourceDirectories")?.files
+                ?: project.extensions.getByType(SourceSetContainer::class.java)
                     .getByName("main").allJava.srcDirs.filterNotNull()
-            }
         } else {
             pluginExtension.reportSourceSets.toList()
         }

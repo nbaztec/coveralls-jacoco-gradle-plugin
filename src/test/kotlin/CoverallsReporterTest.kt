@@ -241,6 +241,7 @@ Content-Transfer-Encoding: binary
 
         val project = mockk<Project> {
             every { rootDir } returns testRepo
+            every { configurations.findByName(any()) } returns null
             every { extensions.getByType(SourceSetContainer::class.java) } returns sourceSetContainer
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns pluginExtension
         }
