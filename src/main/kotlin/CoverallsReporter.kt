@@ -70,14 +70,16 @@ class CoverallsReporter(val envGetter: EnvGetter) {
             source_files = sourceFiles,
         )
 
-        pluginExtension.coverallsRequest?.writeText(req.json(), Charsets.UTF_8)
+        val reqJson = req.json()
+        pluginExtension.coverallsRequest?.writeText(reqJson, Charsets.UTF_8)
+        logger.debug("request-json: $reqJson")
 
         if (pluginExtension.dryRun) {
             logger.info("skip sending to coveralls in dry run")
             return
         }
 
-        send(pluginExtension.apiEndpoint, req.json())
+        send(pluginExtension.apiEndpoint, reqJson)
     }
 
     fun send(endpoint: String, reqJson: String) {
@@ -102,7 +104,6 @@ class CoverallsReporter(val envGetter: EnvGetter) {
         }
 
         logger.info("sending payload to coveralls")
-        logger.debug(reqJson)
         val res = httpClient.execute(httpPost)
         if (res.statusLine.statusCode != 200) {
             throw Exception(

@@ -75,6 +75,17 @@ jacocoTestReport {
 ```
 
 ## Multi-Project Support - Pure Kotlin/Java
+It is recommended to use the [JaCoCo Aggregation plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) to consolidate
+the test reports. Please refer to the [sample](https://docs.gradle.org/current/samples/sample_jvm_multi_project_with_code_coverage_standalone.html) on the website, on how to configure the plugin, 
+and specify the output file in the `coverallsJacoco` config.
+
+```kotlin
+coverallsJacoco {
+    reportPath = "code-coverage-report/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
+}
+```
+
+## (Not Recommended) Multi-Project Support - Pure Kotlin/Java
 To consolidate multiple JaCoCo coverage reports, the following code can be used to add a new task `codeCoverageReport`
 ```kotlin
 tasks.register<JacocoReport>("codeCoverageReport") {
@@ -116,7 +127,7 @@ tasks.register<JacocoReport>("codeCoverageReport") {
 }
 ```
 
-## Multi-Project Support - Android
+## (Not Recommended) Multi-Project Support - Android
 
 To consolidate multiple JaCoCo coverage reports on Android multi-project configurations, the following code can be used to add a new task `jacocoFullReport`
 
