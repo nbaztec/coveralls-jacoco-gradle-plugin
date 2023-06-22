@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlin = "1.4.21"
+    const val kotlin = "1.8.22"
     const val kotlinxCoroutines = "1.4.2"
 
     const val dom4j = "2.1.1"
