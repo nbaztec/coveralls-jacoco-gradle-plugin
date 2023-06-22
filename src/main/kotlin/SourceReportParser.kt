@@ -5,6 +5,7 @@ import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.dom4j.io.SAXReader
 import org.gradle.api.Project
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.tasks.SourceSetContainer
 import java.io.File
 import java.math.BigInteger
@@ -68,15 +69,21 @@ object SourceReportParser {
     fun parse(project: Project): List<SourceReport> {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
-        // if sources are not specified, then lookup android source sets, or if jacocoAggregate plugin is present,
+        // if sources are not specified, then lookup android source sets, or if jacocoAggregation plugin is present,
         // else fallback to main source set
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
-            if (hasAndroidExtension) {
+            if (hasAndroidExtension) { // android source set
                 project.extensions.findByType(BaseAppModuleExtension::class.java)!!.sourceSets
                     .getByName("main").java.srcDirs.filterNotNull()
-            } else project.configurations.findByName("allCodeCoverageReportSourceDirectories")?.files
-                ?: project.extensions.getByType(SourceSetContainer::class.java)
-                    .getByName("main").allJava.srcDirs.filterNotNull()
+            } else // jacocoAggregation plugin
+                project.configurations.findByName("allCodeCoverageReportSourceDirectories")
+                    ?.incoming?.artifactView { view ->
+                        view.componentFilter { it is ProjectComponentIdentifier }
+                        view.lenient(true)
+                    }?.files?.files
+                // main source set
+                    ?: project.extensions.getByType(SourceSetContainer::class.java)
+                        .getByName("main").allJava.srcDirs.filterNotNull()
         } else {
             pluginExtension.reportSourceSets.toList()
         }

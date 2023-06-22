@@ -2,7 +2,10 @@ package org.gradle.plugin.coveralls.jacoco
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ArtifactView.ViewConfiguration
 import org.gradle.api.tasks.SourceSetContainer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -188,8 +191,24 @@ internal class SourceReportParserTest {
         val project = mockk<Project> {
             every { rootDir } returns File("src/test/resources/testrepo")
             every { configurations.findByName("allCodeCoverageReportSourceDirectories") } returns mockk {
-                every { files } returns setOf( testKotlinStyleSourceDir,
-                    testKotlinStyleSourceDirAdditional)
+                every { files } returns emptySet()
+                every { incoming } returns mockk {
+                    val artifactViewConfigAction = slot<Action<ViewConfiguration>>()
+                    every {
+                        artifactView(capture(artifactViewConfigAction))
+                    } answers {
+                        artifactViewConfigAction.captured.execute(mockk {
+                            every { componentFilter(any()) } returns this
+                            every { lenient(true) } returns this
+                        })
+                        mockk {
+                            every { files } returns mockk {
+                                every { files } returns setOf( testKotlinStyleSourceDir,
+                                    testKotlinStyleSourceDirAdditional)
+                            }
+                        }
+                    }
+                }
             }
             every { extensions.getByType(CoverallsJacocoPluginExtension::class.java) } returns mockk {
                 every { reportPath } returns testReport.path
