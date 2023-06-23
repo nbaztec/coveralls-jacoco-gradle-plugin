@@ -14,7 +14,6 @@ buildscript {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
-        languageVersion = "1.4"
     }
 }
 
@@ -103,6 +102,10 @@ tasks {
             System.setProperty("gradle.publish.secret", secret)
         }
     }
+}
+
+tasks.coverallsJacoco {
+    mustRunAfter("jacocoTestReport")
 }
 
 plugins {

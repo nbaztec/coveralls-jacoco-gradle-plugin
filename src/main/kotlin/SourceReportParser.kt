@@ -5,6 +5,10 @@ import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.dom4j.io.SAXReader
 import org.gradle.api.Project
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
+import org.gradle.api.attributes.Bundling
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.VerificationType
 import org.gradle.api.tasks.SourceSetContainer
 import java.io.File
 import java.math.BigInteger
@@ -68,15 +72,37 @@ object SourceReportParser {
     fun parse(project: Project): List<SourceReport> {
         val pluginExtension = project.extensions.getByType(CoverallsJacocoPluginExtension::class.java)
 
-        // if sources are not specified, then lookup android source sets, or if jacocoAggregate plugin is present,
+        // if sources are not specified, then lookup android source sets, or if jacocoAggregation plugin is present,
         // else fallback to main source set
         val sourceDirs = if (pluginExtension.reportSourceSets.count() == 0) {
-            if (hasAndroidExtension) {
+            if (hasAndroidExtension) { // android source set
                 project.extensions.findByType(BaseAppModuleExtension::class.java)!!.sourceSets
                     .getByName("main").java.srcDirs.filterNotNull()
-            } else project.configurations.findByName("allCodeCoverageReportSourceDirectories")?.files
-                ?: project.extensions.getByType(SourceSetContainer::class.java)
-                    .getByName("main").allJava.srcDirs.filterNotNull()
+            } else // jacocoAggregation plugin
+                // Gradle 7
+                project.configurations.findByName("allCodeCoverageReportSourceDirectories")
+                    ?.incoming?.artifactView { view -> view
+                        .componentFilter { it is ProjectComponentIdentifier }
+                        .lenient(true)
+                    }?.files?.files
+                // Gradle 8+
+                    ?: project.configurations.findByName("aggregateCodeCoverageReportResults")
+                        ?.incoming?.artifactView { view ->
+                            val objects = project.objects
+                            view.withVariantReselection()
+                            view.componentFilter { it is ProjectComponentIdentifier}
+                            view.attributes { attributes -> attributes
+                                .attribute(Bundling.BUNDLING_ATTRIBUTE,
+                                    objects.named(Bundling::class.java, Bundling.EXTERNAL))
+                                .attribute(Category.CATEGORY_ATTRIBUTE,
+                                    objects.named(Category::class.java, Category.VERIFICATION))
+                                .attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
+                                    objects.named(VerificationType::class.java, VerificationType.MAIN_SOURCES))
+                            }
+                        }?.files?.files
+                // main source set
+                    ?: project.extensions.getByType(SourceSetContainer::class.java)
+                        .getByName("main").allJava.srcDirs.filterNotNull()
         } else {
             pluginExtension.reportSourceSets.toList()
         }

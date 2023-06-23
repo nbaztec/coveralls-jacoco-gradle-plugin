@@ -81,9 +81,12 @@ and specify the output file in the `coverallsJacoco` config.
 
 ```kotlin
 coverallsJacoco {
-    reportPath = "code-coverage-report/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
+    reportPath = "build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
 }
 ```
+
+The `jacoco-report-aggregation` plugin must be configured in the same project as this plugin, regardless whether it is
+configured in the root project or a standalone utility subproject.
 
 ## (Not Recommended) Multi-Project Support - Pure Kotlin/Java
 To consolidate multiple JaCoCo coverage reports, the following code can be used to add a new task `codeCoverageReport`
