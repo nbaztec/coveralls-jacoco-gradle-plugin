@@ -123,7 +123,7 @@ object SourceReportParser {
                     val lineHits = arrayOfNulls<Int>(lines.size)
 
                     cov.forEach { (line, hits) ->
-                        if (line < lines.size) {
+                        if (line >=0  && line < lines.size) {
                             lineHits[line] = hits
                         } else {
                             logger.debug("skipping invalid line $line, (total ${lines.size})")
