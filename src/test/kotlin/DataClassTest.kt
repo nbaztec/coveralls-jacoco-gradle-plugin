@@ -51,10 +51,12 @@ internal class DataClassTest {
     @Test
     fun `data class SourceReport`() {
         val cov = arrayListOf(1, null)
-        val srcReport = SourceReport("1", "2", cov)
+        val branches = arrayListOf(1, 0, 0, 1)
+        val srcReport = SourceReport("1", "2", cov, branches)
         assertEquals("1", srcReport.name)
         assertEquals("2", srcReport.source_digest)
         assertEquals(cov, srcReport.coverage)
+        assertEquals(branches, srcReport.branches)
     }
 
     @Test

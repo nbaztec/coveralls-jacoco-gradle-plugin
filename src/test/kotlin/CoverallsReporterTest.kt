@@ -106,7 +106,7 @@ internal class CoverallsReporterTest {
         val reporter = spyk(CoverallsReporter(envGetter), recordPrivateCalls = true)
         reporter.report(project)
 
-        assertEquals(546, coverallsRequest.length())
+        assertEquals(577, coverallsRequest.length())
     }
 
     @Test
@@ -175,7 +175,7 @@ internal class CoverallsReporterTest {
 Content-Type: application/json; charset=UTF-8
 Content-Transfer-Encoding: binary
 
-{"repo_token":"test-token","service_name":"github","git":{"head":{"id":"4cd72eadcc34861139b338dd859344d419244e0b","author_name":"John Doe","author_email":"test@example.com","committer_name":"John Doe","committer_email":"test@example.com","message":"test commit"},"branch":"master","remotes":[{"name":"origin","url":"git@github.com:test/testrepo.git"}]},"source_files":[{"name":"javaStyleSrc/main/kotlin/foo/bar/baz/Main.kt","source_digest":"36083cd4c2ac736f9210fd3ed23504b5","coverage":[null,null,null,null,1,1,1,1,null,1,1,0,0,1,1,null,1,1,1]}]}
+{"repo_token":"test-token","service_name":"github","git":{"head":{"id":"4cd72eadcc34861139b338dd859344d419244e0b","author_name":"John Doe","author_email":"test@example.com","committer_name":"John Doe","committer_email":"test@example.com","message":"test commit"},"branch":"master","remotes":[{"name":"origin","url":"git@github.com:test/testrepo.git"}]},"source_files":[{"name":"javaStyleSrc/main/kotlin/foo/bar/baz/Main.kt","source_digest":"36083cd4c2ac736f9210fd3ed23504b5","coverage":[null,null,null,null,1,1,1,1,null,1,1,0,0,1,1,null,1,1,1],"branches":[10,0,1,1,10,0,2,0]}]}
         """.trimIndent()
 
         assertEquals(expected, actual)
@@ -216,7 +216,7 @@ Content-Transfer-Encoding: binary
 Content-Type: application/json; charset=UTF-8
 Content-Transfer-Encoding: binary
 
-{"repo_token":"test-token","service_name":"other","git":{"head":{"id":"4cd72eadcc34861139b338dd859344d419244e0b","author_name":"John Doe","author_email":"test@example.com","committer_name":"John Doe","committer_email":"test@example.com","message":"test commit"},"branch":"master","remotes":[{"name":"origin","url":"git@github.com:test/testrepo.git"}]},"source_files":[{"name":"javaStyleSrc/main/kotlin/foo/bar/baz/Main.kt","source_digest":"36083cd4c2ac736f9210fd3ed23504b5","coverage":[null,null,null,null,1,1,1,1,null,1,1,0,0,1,1,null,1,1,1]}]}
+{"repo_token":"test-token","service_name":"other","git":{"head":{"id":"4cd72eadcc34861139b338dd859344d419244e0b","author_name":"John Doe","author_email":"test@example.com","committer_name":"John Doe","committer_email":"test@example.com","message":"test commit"},"branch":"master","remotes":[{"name":"origin","url":"git@github.com:test/testrepo.git"}]},"source_files":[{"name":"javaStyleSrc/main/kotlin/foo/bar/baz/Main.kt","source_digest":"36083cd4c2ac736f9210fd3ed23504b5","coverage":[null,null,null,null,1,1,1,1,null,1,1,0,0,1,1,null,1,1,1],"branches":[10,0,1,1,10,0,2,0]}]}
         """.trimIndent()
 
         assertEquals(expected, actual)
