@@ -63,7 +63,8 @@ internal class SourceReportParserTest {
             SourceReport(
                 "javaStyleSrc/main/kotlin/foo/bar/baz/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             )
         )
         assertEquals(expected, actual)
@@ -88,12 +89,14 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
@@ -118,12 +121,14 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
@@ -148,12 +153,14 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
@@ -178,17 +185,20 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             ),
             SourceReport(
                 "src/anotherMain/kotlin/Lib.kt",
                 "8b5c1c773cf81996efc19a08f0ac3648",
-                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
@@ -211,8 +221,10 @@ internal class SourceReportParserTest {
                         })
                         mockk {
                             every { files } returns mockk {
-                                every { files } returns setOf( testKotlinStyleSourceDir,
-                                    testKotlinStyleSourceDirAdditional)
+                                every { files } returns setOf(
+                                    testKotlinStyleSourceDir,
+                                    testKotlinStyleSourceDirAdditional
+                                )
                             }
                         }
                     }
@@ -229,17 +241,20 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             ),
             SourceReport(
                 "src/anotherMain/kotlin/Lib.kt",
                 "8b5c1c773cf81996efc19a08f0ac3648",
-                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
@@ -265,7 +280,7 @@ internal class SourceReportParserTest {
                     every {
                         artifactView(capture(artifactViewConfigAction))
                     } answers {
-                        artifactViewConfigAction.captured.execute(mockk ArtifactViewConfig@ {
+                        artifactViewConfigAction.captured.execute(mockk ArtifactViewConfig@{
                             every { withVariantReselection() } returns this
                             every { componentFilter(any()) } returns this
                             val attributeContainerAction = slot<Action<AttributeContainer>>()
@@ -284,8 +299,10 @@ internal class SourceReportParserTest {
                         })
                         mockk {
                             every { files } returns mockk {
-                                every { files } returns setOf( testKotlinStyleSourceDir,
-                                    testKotlinStyleSourceDirAdditional)
+                                every { files } returns setOf(
+                                    testKotlinStyleSourceDir,
+                                    testKotlinStyleSourceDirAdditional
+                                )
                             }
                         }
                     }
@@ -302,17 +319,20 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             ),
             SourceReport(
                 "src/anotherMain/kotlin/Lib.kt",
                 "8b5c1c773cf81996efc19a08f0ac3648",
-                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
@@ -337,17 +357,20 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0)
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList()
             ),
             SourceReport(
                 "src/anotherMain/kotlin/Lib.kt",
                 "8b5c1c773cf81996efc19a08f0ac3648",
-                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null, null, null, null, null),
+                emptyList()
             )
         )
         assertEquals(expected, actual)
