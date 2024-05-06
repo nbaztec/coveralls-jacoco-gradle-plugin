@@ -14,9 +14,11 @@ import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
 
-data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>)
+data class SourceReport(val name: String, val source_digest: String, val coverage: List<Int?>, val branches: List<Int>)
 
 data class Key(val pkg: String, val file: String)
+
+data class Info(val hits: Int, val branchesMissed: Int, val branchesCovered: Int)
 
 object SourceReportParser {
     private val logger: Logger by lazy { LogManager.getLogger(CoverallsReporter::class.java) }
@@ -31,14 +33,14 @@ object SourceReportParser {
         }
     }
 
-    private fun read(reportPath: String): Map<Key, Map<Int, Int>> {
+    private fun read(reportPath: String): Map<Key, Map<Int, Info>> {
         val reader = SAXReader()
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
         val document = reader.read(File(reportPath))
         val root = document.rootElement
 
-        val fullCoverage = mutableMapOf<Key, MutableMap<Int, Int>>()
+        val fullCoverage = mutableMapOf<Key, MutableMap<Int, Info>>()
         root.elements("package").forEach { pkg ->
             val pkgName = pkg.attributeValue("name")
 
@@ -52,9 +54,13 @@ object SourceReportParser {
 
                 sf.elements("line").forEach { line ->
                     val lineIndex = line.attributeValue("nr").toInt() - 1
+                    val branchesMissed = line.attributeValue("mb").toInt()
+                    val branchesCovered = line.attributeValue("cb").toInt()
 
                     // jacoco doesn't count hits
-                    fullCoverage.getValue(key)[lineIndex] = if (line.attributeValue("ci").toInt() > 0) 1 else 0
+                    val hits = if (line.attributeValue("ci").toInt() > 0) 1 else 0
+
+                    fullCoverage.getValue(key)[lineIndex] = Info(hits, branchesMissed, branchesCovered)
                 }
             }
         }
@@ -79,28 +85,36 @@ object SourceReportParser {
                 project.extensions.findByType(BaseAppModuleExtension::class.java)!!.sourceSets
                     .getByName("main").java.srcDirs.filterNotNull()
             } else // jacocoAggregation plugin
-                // Gradle 7
+            // Gradle 7
                 project.configurations.findByName("allCodeCoverageReportSourceDirectories")
-                    ?.incoming?.artifactView { view -> view
-                        .componentFilter { it is ProjectComponentIdentifier }
-                        .lenient(true)
+                    ?.incoming?.artifactView { view ->
+                        view
+                            .componentFilter { it is ProjectComponentIdentifier }
+                            .lenient(true)
                     }?.files?.files
                 // Gradle 8+
                     ?: project.configurations.findByName("aggregateCodeCoverageReportResults")
                         ?.incoming?.artifactView { view ->
                             val objects = project.objects
                             view.withVariantReselection()
-                            view.componentFilter { it is ProjectComponentIdentifier}
-                            view.attributes { attributes -> attributes
-                                .attribute(Bundling.BUNDLING_ATTRIBUTE,
-                                    objects.named(Bundling::class.java, Bundling.EXTERNAL))
-                                .attribute(Category.CATEGORY_ATTRIBUTE,
-                                    objects.named(Category::class.java, Category.VERIFICATION))
-                                .attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
-                                    objects.named(VerificationType::class.java, VerificationType.MAIN_SOURCES))
+                            view.componentFilter { it is ProjectComponentIdentifier }
+                            view.attributes { attributes ->
+                                attributes
+                                    .attribute(
+                                        Bundling.BUNDLING_ATTRIBUTE,
+                                        objects.named(Bundling::class.java, Bundling.EXTERNAL)
+                                    )
+                                    .attribute(
+                                        Category.CATEGORY_ATTRIBUTE,
+                                        objects.named(Category::class.java, Category.VERIFICATION)
+                                    )
+                                    .attribute(
+                                        VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
+                                        objects.named(VerificationType::class.java, VerificationType.MAIN_SOURCES)
+                                    )
                             }
                         }?.files?.files
-                // main source set
+                    // main source set
                     ?: project.extensions.getByType(SourceSetContainer::class.java)
                         .getByName("main").allJava.srcDirs.filterNotNull()
         } else {
@@ -121,17 +135,26 @@ object SourceReportParser {
 
                     val lines = f.readLines()
                     val lineHits = arrayOfNulls<Int>(lines.size)
+                    val branches = mutableListOf<Int>()
 
-                    cov.forEach { (line, hits) ->
-                        if (line >=0  && line < lines.size) {
-                            lineHits[line] = hits
+                    cov.forEach { (line, info) ->
+                        if (line >= 0 && line < lines.size) {
+                            lineHits[line] = info.hits
+
+                            val totalBranches = info.branchesCovered + info.branchesMissed
+                            if (totalBranches > 0) {
+                                for (branchNumber in 1..totalBranches) {
+                                    val covered = if (branchNumber <= info.branchesCovered) 1 else 0
+                                    branches.addAll(listOf(line + 1, 0, branchNumber, covered))
+                                }
+                            }
                         } else {
                             logger.debug("skipping invalid line $line, (total ${lines.size})")
                         }
                     }
 
                     val relPath = File(project.rootDir.absolutePath).toURI().relativize(f.toURI()).toString()
-                    SourceReport(relPath, f.md5(), lineHits.toList())
+                    SourceReport(relPath, f.md5(), lineHits.toList(), branches.toList())
                 }.also {
                     it
                         ?: logger.info("${key.file} could not be found in any of the source directories, skipping")
