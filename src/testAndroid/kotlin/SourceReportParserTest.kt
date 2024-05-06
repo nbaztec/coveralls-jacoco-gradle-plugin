@@ -33,12 +33,14 @@ internal class SourceReportParserTest {
             SourceReport(
                 "src/main/kotlin/Main.kt",
                 "36083cd4c2ac736f9210fd3ed23504b5",
-                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1)
+                listOf(null, null, null, null, 1, 1, 1, 1, null, 1, 1, 0, 0, 1, 1, null, 1, 1, 1),
+                listOf(10, 0, 1, 1, 10, 0, 2, 0),
             ),
             SourceReport(
                 "src/main/kotlin/internal/Util.kt",
                 "805ee340f4d661be591b4eb42f6164d2",
-                listOf(null, null, null, null, 1, 1, 1, null, null)
+                listOf(null, null, null, null, 1, 1, 1, null, null),
+                emptyList(),
             )
         )
         assertEquals(expected, actual)
